@@ -3,7 +3,7 @@
 env_dir=$3
 
 export_env_dir() {
-  whitelist_regex=${2:-'^FORCE_COM_PROTOTYPE_'}
+  whitelist_regex=${2:-'^(BUILD_DIR|FORCE_COM_PROTOTYPE_)'}
   blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
   if [ -d "$env_dir" ]; then
     for e in $(ls $env_dir); do
@@ -16,6 +16,7 @@ export_env_dir() {
 
 export_env_dir
 
+echo "BUILD_DIR: $BUILD_DIR"
 echo "FORCE_COM_PROTOTYPE_LOGIN_URL: $FORCE_COM_PROTOTYPE_LOGIN_URL"
 echo "FORCE_COM_PROTOTYPE_USERNAME: $FORCE_COM_PROTOTYPE_USERNAME"
 echo "FORCE_COM_PROTOTYPE_LOGIN_PASSWORD: $FORCE_COM_PROTOTYPE_PASSWORD"
