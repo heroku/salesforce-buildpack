@@ -1,12 +1,8 @@
 #!/bin/sh
-ENV_DIR=$3
 
-echo "ENV_DIR: $ENV_DIR\n"
-ls $ENV_DIR
-echo
+env_dir=$3
 
 export_env_dir() {
-  env_dir=$3
   whitelist_regex=${2:-'^FORCE_COM_PROTOTYPE_'}
   blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
   if [ -d "$env_dir" ]; then
