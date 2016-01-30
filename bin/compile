@@ -4,12 +4,21 @@ ENV_DIR=$3
 echo "ENV_DIR: $ENV_DIR\n"
 ls $ENV_DIR
 echo
-cat $ENV_DIR/*
-echo
 
-export FORCE_COM_PROTOTYPE_USERNAME=$(< "$ENV_DIR/FORCE_COM_PROTOTYPE_USERNAME")
-export FORCE_COM_PROTOTYPE_PASSWORD=$(< "$ENV_DIR/FORCE_COM_PROTOTYPE_PASSWORD")
-export FORCE_COM_PROTOTYPE_LOGIN_URL=$(< "$ENV_DIR/FORCE_COM_PROTOTYPE_LOGIN_URL")
+export_env_dir() {
+  env_dir=$3
+  whitelist_regex=${2:-'^FORCE_COM_PROTOTYPE_'}
+  blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
+  if [ -d "$env_dir" ]; then
+    for e in $(ls $env_dir); do
+      echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
+      export "$e=$(cat $env_dir/$e)"
+      :
+    done
+  fi
+}
+
+export_env_dir
 
 echo "FORCE_COM_PROTOTYPE_LOGIN_URL: $FORCE_COM_PROTOTYPE_LOGIN_URL"
 echo "FORCE_COM_PROTOTYPE_USERNAME: $FORCE_COM_PROTOTYPE_USERNAME"
