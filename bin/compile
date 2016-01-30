@@ -1,1 +1,2 @@
 #!/bin/sh
+java -jar lib/force-com-buildtool.jar
