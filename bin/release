@@ -1,1 +1,6 @@
 #!/bin/sh
+cat << EOF
+---
+addons:
+  - force-com-prototype
+EOF
