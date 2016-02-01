@@ -1,0 +1,15 @@
+{
+  "name": "alm-driver-prototype",
+  "scripts": {
+  },
+  "env": {
+  },
+  "addons": [
+    "force-com-prototype"
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/sfdc-alm/force-com-buildpack"
+    }
+  ]
+}

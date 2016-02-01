@@ -1,1 +1,1 @@
-Force.com appliation template. 
+Force.com application template. 
