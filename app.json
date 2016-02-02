@@ -1,9 +1,5 @@
 {
-  "name": "alm-driver-prototype",
-  "scripts": {
-  },
-  "env": {
-  },
+  "name": "Force.com Application",
   "addons": [
     "force-com-prototype"
   ],
