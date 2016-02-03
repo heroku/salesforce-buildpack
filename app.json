@@ -5,7 +5,8 @@
   ],
   "buildpacks": [
     {
-      "url": "https://github.com/sfdc-alm/force-com-buildpack"
+      "url": "https://github.com/sfdc-alm/force-com-buildpack",
+      "url": "https://github.com/ntblack/heroku-buildpack-static"
     }
   ]
 }
