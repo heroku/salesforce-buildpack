@@ -2,7 +2,7 @@ import socket
 from os import getenv, environ
 
 HOST, PORT = '', int(getenv('PORT', 5000))
-LOGIN_URL = environ['FORCE_COM_PROTOTYPE_LOGIN_URL']
+LOGIN_URL = environ['FORCE_COM_PROTOTYPE_REDIRECT_URL']
 USERNAME = environ['FORCE_COM_PROTOTYPE_USERNAME']
 PASSWORD = environ['FORCE_COM_PROTOTYPE_PASSWORD']
 
