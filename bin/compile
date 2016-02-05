@@ -22,4 +22,11 @@ echo "FORCE_COM_PROTOTYPE_LOGIN_URL: $FORCE_COM_PROTOTYPE_LOGIN_URL"
 echo "FORCE_COM_PROTOTYPE_USERNAME: $FORCE_COM_PROTOTYPE_USERNAME"
 echo "FORCE_COM_PROTOTYPE_LOGIN_PASSWORD: $FORCE_COM_PROTOTYPE_PASSWORD"
 
-java -jar lib/force-com-buildtool.jar
+BUILD_TOOL_URL=https://github.com/sfdc-alm/alm-driver-prototype/releases/download/1.0.0-SNAPSHOT/driver-prototype.jar
+BUILD_TOOL_DEST=$CACHE_DIR/build
+BUILD_TOOL_JAR=$BUILD_TOOL_DEST/buildtool.jar
+
+mkdir -p $BUILD_TOOL_DEST
+wget $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
+
+java -jar $BUILD_TOOL_JAR
