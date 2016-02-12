@@ -1,4 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+# Fail fast and fail hard.
+set -eo pipefail
 
 env_dir=$3
 
@@ -21,11 +24,15 @@ echo "BUILD_DIR: $BUILD_DIR"
 echo "FORCE_COM_PROTOTYPE_API_URL: $FORCE_COM_PROTOTYPE_API_URL"
 echo "FORCE_COM_PROTOTYPE_USERNAME: $FORCE_COM_PROTOTYPE_USERNAME"
 
-BUILD_TOOL_URL=https://github.com/forcedotcom/force-com-buildpack/releases/download/1.0.0-SNAPSHOT/driver-prototype.jar
+BUILD_TOOL_URL=https://github.com/forcedotcom/force-com-buildpack/releases/download/1.0.0-DEMO-1/driver-prototype.jar
 BUILD_TOOL_DEST=$BUILD_DIR/build
-BUILD_TOOL_JAR=$BUILD_TOOL_DEST/buildtool.jar
+BUILD_TOOL_JAR=$BUILD_TOOL_DEST/force-com-driver.jar
 
 mkdir -p $BUILD_TOOL_DEST
 wget $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
+
+mkdir -p $BUILD_DIR/lib
+SFDC_DRIVER=$BUILD_DIR/lib/force-com-driver.jar
+cp $BUILD_TOOL_JAR $SFDC_DRIVER
 
 java -jar $BUILD_TOOL_JAR
