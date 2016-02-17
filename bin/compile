@@ -20,7 +20,6 @@ export_env_dir() {
 export_env_dir
 export BUILD_DIR=$1
 
-echo "$SOURCE_VERSION" > $env_dir/SOURCE_VERSION
 
 echo "BUILD_DIR: $BUILD_DIR"
 echo "SOURCE_VERSION: $SOURCE_VERSION"
@@ -33,6 +32,8 @@ BUILD_TOOL_JAR=$BUILD_TOOL_DEST/force-com-driver.jar
 
 mkdir -p $BUILD_TOOL_DEST
 wget $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
+
+echo "$SOURCE_VERSION" > $BUILD_TOOL_DEST/SOURCE_VERSION
 
 mkdir -p $BUILD_DIR/lib
 SFDC_DRIVER=$BUILD_DIR/lib/force-com-driver.jar
