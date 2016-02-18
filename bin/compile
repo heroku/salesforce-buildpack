@@ -44,7 +44,7 @@ mkdir -p $BUILD_DIR/bin
 
 cat > $BUILD_DIR/bin/runtests << EOF
 #!/usr/bin/env bash
-SOURCE_VERSION=\$(< build/SOURCE_VERSION)
+export SOURCE_VERSION=\$(< build/SOURCE_VERSION)
 java -cp lib/force-com-driver.jar TestRunner
 EOF
 
