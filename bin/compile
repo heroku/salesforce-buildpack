@@ -39,4 +39,15 @@ mkdir -p $BUILD_DIR/lib
 SFDC_DRIVER=$BUILD_DIR/lib/force-com-driver.jar
 cp $BUILD_TOOL_JAR $SFDC_DRIVER
 
+# write out testrunner script
+mkdir -p $BUILD_DIR/bin
+
+cat > $BUILD_DIR/bin/runtests << EOF
+#!/usr/bin/env bash
+SOURCE_VERSION=$(< build/SOURCE_VERSION)
+java -cp lib/force-com-driver.jar TestRunner
+EOF
+
+chmod +x $BUILD_DIR/bin/runtests
+
 java -jar $BUILD_TOOL_JAR

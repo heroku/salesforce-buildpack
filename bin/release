@@ -2,5 +2,5 @@
 cat << EOF
 ---
 default_process_types:
-  web: java -cp lib/force-com-driver.jar TestRunner
+  web: bin/runtests
 EOF
