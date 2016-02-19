@@ -27,27 +27,29 @@ echo "FORCE_COM_PROTOTYPE_API_URL: $FORCE_COM_PROTOTYPE_API_URL"
 echo "FORCE_COM_PROTOTYPE_USERNAME: $FORCE_COM_PROTOTYPE_USERNAME"
 
 BUILD_TOOL_URL=https://github.com/forcedotcom/force-com-buildpack/releases/download/1.0.0-DEMO-2/driver-prototype.jar
-BUILD_TOOL_DEST=$BUILD_DIR/build
-BUILD_TOOL_JAR=$BUILD_TOOL_DEST/force-com-driver.jar
+JAR_NAME=appcloud-client.jar
+CLIENT_DIR=lib
+BUILD_TOOL_DEST=$BUILD_DIR/$CLIENT_DIR
+BUILD_TOOL_JAR=$BUILD_TOOL_DEST/$JAR_NAME
 
 mkdir -p $BUILD_TOOL_DEST
 wget $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
 
-echo "$SOURCE_VERSION" > $BUILD_TOOL_DEST/SOURCE_VERSION
-
-mkdir -p $BUILD_DIR/lib
-SFDC_DRIVER=$BUILD_DIR/lib/force-com-driver.jar
-cp $BUILD_TOOL_JAR $SFDC_DRIVER
 
 # write out testrunner script
+echo "$SOURCE_VERSION" > $BUILD_TOOL_DEST/SOURCE_VERSION
 mkdir -p $BUILD_DIR/bin
+
+cp lib/server.py $BUILD_DIR/$CLIENT_DIR/server.py
 
 cat > $BUILD_DIR/bin/runtests << EOF
 #!/usr/bin/env bash
-export SOURCE_VERSION=\$(< build/SOURCE_VERSION)
-java -cp lib/force-com-driver.jar TestRunner
+export SOURCE_VERSION=\$(< $CLIENT_DIR/SOURCE_VERSION)
+java -cp $CLIENT_DIR/$JAR_NAME TestRunner &
+python $CLIENT_DIR/server.py
 EOF
 
 chmod +x $BUILD_DIR/bin/runtests
 
+# deploy source code
 java -jar $BUILD_TOOL_JAR
