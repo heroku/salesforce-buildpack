@@ -36,7 +36,7 @@ BUILD_TOOL_DEST=$BUILD_DIR/$CLIENT_DIR
 BUILD_TOOL_JAR=$BUILD_TOOL_DEST/$JAR_NAME
 
 mkdir -p $BUILD_TOOL_DEST
-#wget $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
+wget $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
 
 # figure out the source version and write it to a file to be used in runtime
 # SOURCE_VERSION unfortunately isn't the same as the SHA in GitHub
