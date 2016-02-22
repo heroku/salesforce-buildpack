@@ -4,7 +4,7 @@
 set -eo pipefail
 
 # debug the env
-env
+#env
 
 env_dir=$3
 
@@ -36,17 +36,24 @@ BUILD_TOOL_DEST=$BUILD_DIR/$CLIENT_DIR
 BUILD_TOOL_JAR=$BUILD_TOOL_DEST/$JAR_NAME
 
 mkdir -p $BUILD_TOOL_DEST
-wget $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
+#wget $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
 
 # figure out the source version and write it to a file to be used in runtime
 # SOURCE_VERSION unfortunately isn't the same as the SHA in GitHub
-GITHUB_SHA=$(echo $RECEIVE_DATA | sed 's|.*"source_url":".*gz/\([A-Za-z0-9]*\).*|\1|')
-echo "GITHUB_SHA: $GITHUB_SHA"
+# The source only comes from the tarball for review apps.
+# If you deploy from the Heroku button it will be the URL of the repo (possibly with the
+# branch name if you clicked from the branch). In this case we won't write out the SHA.
+TARBALL_PATTERN='"source_url":.*\.gz/\([A-Za-z0-9]*\)'
+if echo $RECEIVE_DATA | grep -q $TARBALL_PATTERN; then
+    GITHUB_SHA=$(echo $RECEIVE_DATA | sed "s|.*$TARBALL_PATTERN.*|\1|")
+    echo "GITHUB_SHA: $GITHUB_SHA"
+    echo "$GITHUB_SHA" > $BUILD_TOOL_DEST/SOURCE_VERSION
+else
+    echo "GITHUB_SHA not found"
+fi
 
 # write out testrunner script
-echo "$GITHUB_SHA" > $BUILD_TOOL_DEST/SOURCE_VERSION
 mkdir -p $BUILD_DIR/bin
-
 cp lib/server.py $BUILD_DIR/$CLIENT_DIR/server.py
 
 cat > $BUILD_DIR/bin/runtests << EOF
