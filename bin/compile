@@ -9,7 +9,7 @@ set -eo pipefail
 env_dir=$3
 
 export_env_dir() {
-  whitelist_regex=${2:-'^(FORCE_COM_PROTOTYPE_)'}
+  whitelist_regex=${2:-'^(FORCE_COM_ALM_)'}
   blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
   if [ -d "$env_dir" ]; then
     for e in $(ls $env_dir); do
