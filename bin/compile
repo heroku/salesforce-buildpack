@@ -29,7 +29,7 @@ echo "SOURCE_VERSION: $SOURCE_VERSION"
 echo "FORCE_COM_PROTOTYPE_API_URL: $FORCE_COM_PROTOTYPE_API_URL"
 echo "FORCE_COM_PROTOTYPE_USERNAME: $FORCE_COM_PROTOTYPE_USERNAME"
 
-BUILD_TOOL_URL=https://github.com/forcedotcom/force-com-buildpack/releases/download/1.0.0-DEMO-3/driver-prototype.jar
+BUILD_TOOL_URL=https://github.com/forcedotcom/force-com-buildpack/releases/download/1.0.0-DEMO-4/driver-prototype.jar
 JAR_NAME=appcloud-client.jar
 CLIENT_DIR=lib
 BUILD_TOOL_DEST=$BUILD_DIR/$CLIENT_DIR
