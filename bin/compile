@@ -66,4 +66,5 @@ EOF
 chmod +x $BUILD_DIR/bin/runtests
 
 # deploy source code
-java -jar $BUILD_TOOL_JAR
+echo "----> Force.com deploy phase"
+java -cp $BUILD_TOOL_JAR -DforceComUrlFile=$env_dir/FORCE_COM_ALM_URL Main
