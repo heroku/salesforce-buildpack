@@ -1,18 +1,38 @@
 import socket
 import SimpleHTTPServer
 import SocketServer
+import re
 from os import getenv, environ
+import urllib2
+import json
 
 HOST, PORT = '', int(getenv('PORT', 5000))
-LOGIN_URL = environ['FORCE_COM_PROTOTYPE_WEB_LOGIN_URL']
-USERNAME = environ['FORCE_COM_PROTOTYPE_USERNAME']
-PASSWORD = environ['FORCE_COM_PROTOTYPE_PASSWORD']
+FORCE_COM_ALM_URL = environ['FORCE_COM_ALM_URL']
+
+pattern = "force://(.*):(.*):(.*)@(.*)"
+
+m = re.search(pattern, FORCE_COM_ALM_URL)
+
+client_id=m.group(1)
+client_secret=m.group(2)
+refresh_token=m.group(3)
+instance = m.group(4)
+
+url = "https://login.salesforce.com/services/oauth2/token?grant_type=refresh_token&client_id=%s&client_secret=%s&refresh_token=%s" % (client_id, client_secret, refresh_token)
+print url
+req = urllib2.Request(url, None)
+response = urllib2.urlopen(req)
+data = json.loads(response.read())
+print data
+access_token=data['access_token']
+
+login_url = "https://%s/secur/frontdoor.jsp" % (instance)
 
 class myHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
    def do_GET(self):
        print self.path
        self.send_response(303)
-       new_path = '%s?un=%s&pw=%s'%(LOGIN_URL, USERNAME, PASSWORD)
+       new_path = '%s?sid=%s'%(login_url, access_token)
        self.send_header('Location', new_path)
        self.end_headers()
 
