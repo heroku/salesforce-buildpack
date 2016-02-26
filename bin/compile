@@ -65,4 +65,30 @@ chmod +x $BUILD_DIR/bin/runtests
 
 # deploy source code
 echo "----> Force.com deploy phase"
+
+regex='"app_info":{"id":"([0-9a-z-]*)'
+[[ $RECEIVE_DATA =~ $regex ]]
+APP_ID=${BASH_REMATCH[1]}
+echo "APP_ID=$APP_ID"
+
+let "max_wait = 60 * 5"
+let wait_time=0
+regex='"FORCE_COM_ALM_URL"'
+
+until [[ ($curl_output =~ $regex) || ($wait_time > $max_wait)  ]]
+do
+  echo "Waiting $wait_time seconds for FORCE_COM_ALM_URL resource..."
+  sleep $wait_time
+  let "wait_time = $wait_time + 10"
+
+  curl_output=$(curl -n -i "https://api.heroku.com/apps/$APP_ID/config-vars"   -H "Accept: application/vnd.heroku+json; version=3")
+  echo $curl_output
+done
+
+if [[ ($wait_time > $max_wait) ]]
+then 
+  echo "Gave up waiting for FORCE_COM_ALM_URL resource (timeout)"
+  exit 1
+fi
+
 java -cp $BUILD_TOOL_JAR -DforceComUrlFile=$env_dir/FORCE_COM_ALM_URL Main
