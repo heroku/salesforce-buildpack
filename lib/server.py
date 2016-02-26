@@ -18,7 +18,8 @@ client_secret=m.group(2)
 refresh_token=m.group(3)
 instance = m.group(4)
 
-url = "https://login.salesforce.com/services/oauth2/token?grant_type=refresh_token&client_id=%s&client_secret=%s&refresh_token=%s" % (client_id, client_secret, refresh_token)
+url = "https://%s/services/oauth2/token?grant_type=refresh_token&client_id=%s&client_secret=%s&refresh_token=%s" % 
+	(instance, client_id, client_secret, refresh_token)
 print url
 req = urllib2.Request(url, None)
 response = urllib2.urlopen(req)
