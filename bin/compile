@@ -80,7 +80,7 @@ let "max_wait = 300"
 let wait_time=0
 regex='"FORCE_COM_ALM_URL":"(.*)"'
 
-until [[ ($curl_output =~ $regex) || ($wait_time > $max_wait)  ]]
+until [[ ($curl_output =~ $regex) || ($wait_time -gt $max_wait)  ]]
 do
   echo "Waiting $wait_time seconds for FORCE_COM_ALM_URL resource..."
   sleep $wait_time
