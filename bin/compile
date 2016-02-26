@@ -66,6 +66,8 @@ chmod +x $BUILD_DIR/bin/runtests
 # deploy source code
 echo "----> Force.com deploy phase"
 
+set +e
+
 regex='"app_info":{"id":"([0-9a-z-]*)'
 [[ $RECEIVE_DATA =~ $regex ]]
 APP_ID=${BASH_REMATCH[1]}
