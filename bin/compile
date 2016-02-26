@@ -70,9 +70,10 @@ echo "----> Force.com deploy phase"
 set +e
 set -v
 
-regex='"app_info":{"id":"([0-9a-z-]*)'
+regex='"app_info":\{"id":"([0-9a-z-]*)'
 [[ $RECEIVE_DATA =~ $regex ]]
-APP_ID=${BASH_REMATCH[1]}
+APP_ID=${BASH_REMATCH[1]}]
+echo $BASH_REMATCH
 echo "APP_ID=$APP_ID"
 
 let "max_wait = 60 * 5"
