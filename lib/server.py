@@ -21,9 +21,11 @@ instance = m.group(4)
 url = "https://%s/services/oauth2/token?grant_type=refresh_token&client_id=%s&client_secret=%s&refresh_token=%s" % (instance, client_id, client_secret, refresh_token)
 print url
 req = urllib2.Request(url, None)
+req.get_method = lambda: "POST"
 response = urllib2.urlopen(req)
-data = json.loads(response.read())
+data = response.read()
 print data
+data = json.loads(data)
 access_token=data['access_token']
 
 login_url = "https://%s/secur/frontdoor.jsp" % (instance)
