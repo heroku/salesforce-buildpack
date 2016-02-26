@@ -4,7 +4,7 @@
 set -eo pipefail
 
 # debug the env
-env
+# env
 
 env_dir=$3
 
@@ -26,6 +26,7 @@ export BUILD_DIR=$1
 
 echo "BUILD_DIR: $BUILD_DIR"
 echo "SOURCE_VERSION: $SOURCE_VERSION"
+echo "RECEIVE_DATA: $RECEIVE_DATA"
 
 BUILD_TOOL_URL=https://github.com/forcedotcom/force-com-buildpack/releases/download/1.0.0-DEMO-4/driver-prototype.jar
 JAR_NAME=appcloud-client.jar
