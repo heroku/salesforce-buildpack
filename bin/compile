@@ -90,7 +90,7 @@ do
   echo $curl_output
 done
 
-if [[ ($wait_time > $max_wait) ]]
+if [[ ($wait_time -gt $max_wait) ]]
 then 
   echo "Gave up waiting for FORCE_COM_ALM_URL resource (timeout)"
   exit 1
