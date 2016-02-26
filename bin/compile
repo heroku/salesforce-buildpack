@@ -86,7 +86,7 @@ do
   sleep $wait_time
   let "wait_time = $wait_time + 10"
 
-  curl_output=$(curl -n -i "https://api.heroku.com/apps/$APP_ID/config-vars"   -H "Accept: application/vnd.heroku+json; version=3")
+  curl_output=$(curl -n -i -u $HEROKU_LOGIN:$HEROKU_PASSWORD "https://api.heroku.com/apps/$APP_ID/config-vars"   -H "Accept: application/vnd.heroku+json; version=3")
   echo $curl_output
 done
 
