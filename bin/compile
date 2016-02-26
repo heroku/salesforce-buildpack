@@ -76,7 +76,7 @@ APP_ID=${BASH_REMATCH[1]}
 echo $BASH_REMATCH
 echo "APP_ID=$APP_ID"
 
-let "max_wait = 60 * 5"
+let "max_wait = 300"
 let wait_time=0
 regex='"FORCE_COM_ALM_URL"'
 
