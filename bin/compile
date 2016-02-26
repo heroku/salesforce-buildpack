@@ -56,7 +56,7 @@ mkdir -p $BUILD_DIR/bin
 cp lib/server.py $BUILD_DIR/$CLIENT_DIR/server.py
 
 cat > $BUILD_DIR/bin/runtests << EOF
-#!/usr/bin/env bash
+
 export SOURCE_VERSION=\$(< $CLIENT_DIR/SOURCE_VERSION)
 java -cp $CLIENT_DIR/$JAR_NAME TestRunner &
 python $CLIENT_DIR/server.py
@@ -68,6 +68,7 @@ chmod +x $BUILD_DIR/bin/runtests
 echo "----> Force.com deploy phase"
 
 set +e
+set -v
 
 regex='"app_info":{"id":"([0-9a-z-]*)'
 [[ $RECEIVE_DATA =~ $regex ]]
