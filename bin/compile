@@ -78,7 +78,7 @@ echo "APP_ID=$APP_ID"
 
 let "max_wait = 300"
 let wait_time=0
-regex='"FORCE_COM_ALM_URL"'
+regex='"FORCE_COM_ALM_URL":"(.*)"'
 
 until [[ ($curl_output =~ $regex) || ($wait_time > $max_wait)  ]]
 do
@@ -87,13 +87,18 @@ do
   let "wait_time = $wait_time + 10"
 
   curl_output=$(curl -i -u $HEROKU_LOGIN:$HEROKU_PASSWORD "https://api.heroku.com/apps/$APP_ID/config-vars"   -H "Accept: application/vnd.heroku+json; version=3")
+  FORCE_COM_ALM_URL=${BASH_REMATCH[1]}
   echo $curl_output
 done
+
 
 if [[ ($wait_time -gt $max_wait) ]]
 then 
   echo "Gave up waiting for FORCE_COM_ALM_URL resource (timeout)"
   exit 1
 fi
+
+echo "FORCE_COM_ALM_URL: $FORCE_COM_ALM_URL"
+export FORCE_COM_ALM_URL=$FORCE_COM_ALM_URL
 
 java -cp $BUILD_TOOL_JAR -DforceComUrlFile=$env_dir/FORCE_COM_ALM_URL Main
