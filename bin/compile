@@ -8,6 +8,10 @@ set -eo pipefail
 
 env_dir=$3
 
+indent() {
+  sed -u 's/^/       /'
+}
+
 export_env_dir() {
   whitelist_regex=${2:-'^(FORCE_COM_ALM_|HEROKU_)'}
   blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
@@ -24,18 +28,20 @@ export_env_dir
 export BUILD_DIR=$1
 
 
-echo "BUILD_DIR: $BUILD_DIR"
-echo "SOURCE_VERSION: $SOURCE_VERSION"
-echo "RECEIVE_DATA: $RECEIVE_DATA"
+#echo "BUILD_DIR: $BUILD_DIR"
+#echo "SOURCE_VERSION: $SOURCE_VERSION"
+#echo "RECEIVE_DATA: $RECEIVE_DATA"
 
-BUILD_TOOL_URL=https://github.com/forcedotcom/force-com-buildpack/releases/download/1.0.0-DEMO-4/driver-prototype.jar
+DRIVER_VERSION="1.0.0-DEMO-4"
+BUILD_TOOL_URL=https://github.com/forcedotcom/force-com-buildpack/releases/download/$DRIVER_VERSION/driver-prototype.jar
 JAR_NAME=appcloud-client.jar
 CLIENT_DIR=lib
 BUILD_TOOL_DEST=$BUILD_DIR/$CLIENT_DIR
 BUILD_TOOL_JAR=$BUILD_TOOL_DEST/$JAR_NAME
 
 mkdir -p $BUILD_TOOL_DEST
-wget $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
+echo "-----> Downloading Force.com test client version $DRIVER_VERSION"
+wget -q $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
 
 # figure out the source version and write it to a file to be used in runtime
 # SOURCE_VERSION unfortunately isn't the same as the SHA in GitHub
@@ -45,10 +51,10 @@ wget $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
 TARBALL_PATTERN='"source_url":.*\.gz/\([A-Za-z0-9]*\)'
 if echo $RECEIVE_DATA | grep -q $TARBALL_PATTERN; then
     GITHUB_SHA=$(echo $RECEIVE_DATA | sed "s|.*$TARBALL_PATTERN.*|\1|")
-    echo "GITHUB_SHA: $GITHUB_SHA"
+    #echo "GITHUB_SHA: $GITHUB_SHA"
     echo "$GITHUB_SHA" > $BUILD_TOOL_DEST/SOURCE_VERSION
-else
-    echo "GITHUB_SHA not found"
+#else
+    #echo "GITHUB_SHA not found"
 fi
 
 # write out testrunner script
@@ -65,16 +71,16 @@ EOF
 chmod +x $BUILD_DIR/bin/runtests
 
 # deploy source code
-echo "----> Force.com deploy phase"
+echo "-----> Deploying Force.com application"
 
 set +e
-set -v
+#set -v
 
 regex='"app_info":\{"id":"([0-9a-z-]*)'
 [[ $RECEIVE_DATA =~ $regex ]]
 APP_ID=${BASH_REMATCH[1]}
-echo $BASH_REMATCH
-echo "APP_ID=$APP_ID"
+#echo $BASH_REMATCH
+#echo "APP_ID=$APP_ID"
 
 let "max_wait = 300"
 let wait_time=0
@@ -82,13 +88,12 @@ regex='"FORCE_COM_ALM_URL":"(.*\.salesforce.com)"'
 
 until [[ ($curl_output =~ $regex) || ($wait_time -gt $max_wait)  ]]
 do
-  echo "Waiting $wait_time seconds for FORCE_COM_ALM_URL resource..."
+  echo "Waiting $wait_time seconds for FORCE_COM_ALM_URL resource..." | indent
   sleep $wait_time
   let "wait_time = $wait_time + 10"
 
-  curl_output=$(curl -u $HEROKU_LOGIN:$HEROKU_PASSWORD "https://api.heroku.com/apps/$APP_ID/config-vars"   -H "Accept: application/vnd.heroku+json; version=3")
+  curl_output=$(curl -s -u $HEROKU_LOGIN:$HEROKU_PASSWORD "https://api.heroku.com/apps/$APP_ID/config-vars"   -H "Accept: application/vnd.heroku+json; version=3")
   
-  echo "curl output:\n$curl_output"
 done
 
 export FORCE_COM_ALM_URL=${BASH_REMATCH[1]}
@@ -98,8 +103,8 @@ if [[ ($wait_time -gt $max_wait) ]]
 then 
   echo "Gave up waiting for FORCE_COM_ALM_URL resource (timeout)"
   exit 1
-fi
+fi | indent
 
-echo "FORCE_COM_ALM_URL: $FORCE_COM_ALM_URL"
+#echo "FORCE_COM_ALM_URL: $FORCE_COM_ALM_URL"
 
-java -cp $BUILD_TOOL_JAR -DforceComUrlFile=$env_dir/FORCE_COM_ALM_URL Main
+java -cp $BUILD_TOOL_JAR -DforceComUrlFile=$env_dir/FORCE_COM_ALM_URL Main | indent
