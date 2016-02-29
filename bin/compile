@@ -78,7 +78,7 @@ echo "APP_ID=$APP_ID"
 
 let "max_wait = 300"
 let wait_time=0
-regex='"FORCE_COM_ALM_URL":"(.*)"'
+regex='"FORCE_COM_ALM_URL":"(.*\.salesforce.com)"'
 
 until [[ ($curl_output =~ $regex) || ($wait_time -gt $max_wait)  ]]
 do
@@ -86,9 +86,9 @@ do
   sleep $wait_time
   let "wait_time = $wait_time + 10"
 
-  curl_output=$(curl -i -u $HEROKU_LOGIN:$HEROKU_PASSWORD "https://api.heroku.com/apps/$APP_ID/config-vars"   -H "Accept: application/vnd.heroku+json; version=3")
+  curl_output=$(curl -u $HEROKU_LOGIN:$HEROKU_PASSWORD "https://api.heroku.com/apps/$APP_ID/config-vars"   -H "Accept: application/vnd.heroku+json; version=3")
   
-  echo $curl_output
+  echo "curl output:\n$curl_output"
 done
 
 export FORCE_COM_ALM_URL=${BASH_REMATCH[1]}
