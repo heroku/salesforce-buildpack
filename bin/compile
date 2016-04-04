@@ -44,18 +44,7 @@ echo "-----> Downloading Force.com test client version $DRIVER_VERSION"
 wget -q $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
 
 # figure out the source version and write it to a file to be used in runtime
-# SOURCE_VERSION unfortunately isn't the same as the SHA in GitHub
-# The source only comes from the tarball for review apps.
-# If you deploy from the Heroku button it will be the URL of the repo (possibly with the
-# branch name if you clicked from the branch). In this case we won't write out the SHA.
-TARBALL_PATTERN='"source_url":.*\.gz/\([A-Za-z0-9]*\)'
-if echo $RECEIVE_DATA | grep -q $TARBALL_PATTERN; then
-    GITHUB_SHA=$(echo $RECEIVE_DATA | sed "s|.*$TARBALL_PATTERN.*|\1|")
-    #echo "GITHUB_SHA: $GITHUB_SHA"
-    echo "$GITHUB_SHA" > $BUILD_TOOL_DEST/SOURCE_VERSION
-#else
-    #echo "GITHUB_SHA not found"
-fi
+echo "$SOURCE_VERSION" > $BUILD_TOOL_DEST/SOURCE_VERSION
 
 # write out testrunner script
 mkdir -p $BUILD_DIR/bin
