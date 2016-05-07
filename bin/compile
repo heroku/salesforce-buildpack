@@ -75,7 +75,7 @@ let "max_wait = 120"
 let wait_time=0
 regex='"FORCE_COM_ALM_URL":"(.*\.salesforce.com)"'
 
-until [[ ($curl_output =~ $regex) || ($wait_time -gt $max_wait)  ]]
+until [[ FORCE_COM_ALM_URL || ($curl_output =~ $regex) || ($wait_time -gt $max_wait)  ]]
 do
   echo "Waiting $wait_time seconds for FORCE_COM_ALM_URL resource..." | indent
   sleep 10
