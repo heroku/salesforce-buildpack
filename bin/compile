@@ -8,8 +8,12 @@ set -eo pipefail
 
 env_dir=$3
 
-indent() {
-  sed 's/^/       /'
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
 }
 
 export_env_dir() {
