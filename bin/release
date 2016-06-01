@@ -1,6 +1,0 @@
-#!/bin/sh
-cat << EOF
----
-default_process_types:
-  web: bin/runtests
-EOF
