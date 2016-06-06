@@ -8,12 +8,16 @@ set -eo pipefail
 
 env_dir=$3
 
-indent() {
-  sed -u 's/^/       /'
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
 }
 
 export_env_dir() {
-  whitelist_regex=${2:-'^(FORCE_COM_ALM_|HEROKU_)'}
+  whitelist_regex=${2:-$'^(SALESFORCE_|HEROKU_)'}
   blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
   if [ -d "$env_dir" ]; then
     for e in $(ls $env_dir); do
@@ -32,71 +36,31 @@ export BUILD_DIR=$1
 #echo "SOURCE_VERSION: $SOURCE_VERSION"
 #echo "RECEIVE_DATA: $RECEIVE_DATA"
 
-DRIVER_VERSION="1.0.0-DEMO-5"
+DRIVER_VERSION="1.0.0-DEMO-6"
 BUILD_TOOL_URL=https://github.com/forcedotcom/force-com-buildpack/releases/download/$DRIVER_VERSION/driver-prototype.jar
 JAR_NAME=appcloud-client.jar
-CLIENT_DIR=lib
-BUILD_TOOL_DEST=$BUILD_DIR/$CLIENT_DIR
+SALESFORCE_DIR=$BUILD_DIR/.salesforce
+BUILD_TOOL_DEST=$SALESFORCE_DIR/lib
 BUILD_TOOL_JAR=$BUILD_TOOL_DEST/$JAR_NAME
 
 mkdir -p $BUILD_TOOL_DEST
 echo "-----> Downloading Force.com test client version $DRIVER_VERSION"
 wget -q $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
 
-# figure out the source version and write it to a file to be used in runtime
-echo "$SOURCE_VERSION" > $BUILD_TOOL_DEST/SOURCE_VERSION
 
-# write out testrunner script
-mkdir -p $BUILD_DIR/bin
-cp lib/server.py $BUILD_DIR/$CLIENT_DIR/server.py
+echo "-----> Setting up Force.com for release phase deployment."
 
-cat > $BUILD_DIR/bin/runtests << EOF
-
-export SOURCE_VERSION=\$(< $CLIENT_DIR/SOURCE_VERSION)
-java -cp $CLIENT_DIR/$JAR_NAME TestRunner &
-python $CLIENT_DIR/server.py
+cat > $SALESFORCE_DIR/deploy << EOF
+if [[ \$SALESFORCE_URL ]]
+then
+  echo "Deploying Force.com application"
+  java -cp .salesforce/lib/$JAR_NAME Main 
+else
+  echo "Force.com deployment failed because SALESFORCE_URL is not configured"
+  exit 1
+fi
 EOF
 
-chmod +x $BUILD_DIR/bin/runtests
+chmod +x $SALESFORCE_DIR/deploy
 
-# deploy source code
-echo "-----> Deploying Force.com application"
-
-set +e
-#set -v
-
-regex='"app_info":\{"id":"([0-9a-z-]*)'
-[[ $RECEIVE_DATA =~ $regex ]]
-APP_ID=${BASH_REMATCH[1]}
-#echo $BASH_REMATCH
-#echo "APP_ID=$APP_ID"
-
-let "max_wait = 120"
-let wait_time=0
-regex='"FORCE_COM_ALM_URL":"(.*\.salesforce.com)"'
-
-until [[ FORCE_COM_ALM_URL || ($wait_time -gt $max_wait)  ]]
-do
-  echo "Waiting $wait_time seconds for FORCE_COM_ALM_URL resource..." | indent
-  sleep 10
-  let "wait_time = $wait_time + 10"
-
-  curl_output=$(curl -s -u $HEROKU_LOGIN:$HEROKU_PASSWORD "https://api.heroku.com/apps/$APP_ID/config-vars"   -H "Accept: application/vnd.heroku+json; version=3")
-  if [[ ($curl_output =~ $regex) ]]
-  then
-    export FORCE_COM_ALM_URL=${BASH_REMATCH[1]}
-  fi
-done
-
-
-
-
-if [[ ($wait_time -gt $max_wait) ]]
-then 
-  echo "Gave up waiting for FORCE_COM_ALM_URL resource (timeout)"
-  exit 1
-fi | indent
-
-#echo "FORCE_COM_ALM_URL: $FORCE_COM_ALM_URL"
-
-java -cp $BUILD_TOOL_JAR -DforceComUrlFile=$env_dir/FORCE_COM_ALM_URL Main | indent
+echo "Configure your application to invoke .salesforce/deploy in your release phase script." | indent
