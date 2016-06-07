@@ -1,40 +1,44 @@
 #!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
 
-# Fail fast and fail hard.
-set -eo pipefail
+### Configure environment
 
-# debug the env
-# env
+set -o errexit    # always exit on error
+set -o pipefail   # don't ignore exit codes when piping output
+set -o nounset    # fail on unset variables
+unset GIT_DIR     # Avoid GIT_DIR leak from previous build steps
 
-env_dir=$3
+### Configure directories
 
-function indent() {
-  c='s/^/       /'
-  case $(uname) in
-    Darwin) sed -l "$c";;
-    *)      sed -u "$c";;
-  esac
-}
+BUILD_DIR=${1:-}
+CACHE_DIR=${2:-}
+ENV_DIR=${3:-}
 
-export_env_dir() {
-  whitelist_regex=${2:-$'^(SALESFORCE_|HEROKU_)'}
-  blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
-  if [ -d "$env_dir" ]; then
-    for e in $(ls $env_dir); do
-      echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
-      export "$e=$(cat $env_dir/$e)"
-      :
-    done
-  fi
-}
+BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
+SALESFORCE_DIR=$BUILD_DIR/.salesforce
 
+### Load dependencies
+
+source $BP_DIR/lib/common.sh
+source $BP_DIR/lib/node.sh
+
+### Compile
+
+status "Exporting config vars to environment"
 export_env_dir
-export BUILD_DIR=$1
 
+install_nodejs $SALESFORCE_DIR
+
+node --version
+npm --version
+
+exit 0
 
 #echo "BUILD_DIR: $BUILD_DIR"
 #echo "SOURCE_VERSION: $SOURCE_VERSION"
 #echo "RECEIVE_DATA: $RECEIVE_DATA"
+
+export BUILD_DIR=$1
 
 DRIVER_VERSION="1.0.0-DEMO-6"
 BUILD_TOOL_URL=https://github.com/forcedotcom/force-com-buildpack/releases/download/$DRIVER_VERSION/driver-prototype.jar
@@ -44,19 +48,18 @@ BUILD_TOOL_DEST=$SALESFORCE_DIR/lib
 BUILD_TOOL_JAR=$BUILD_TOOL_DEST/$JAR_NAME
 
 mkdir -p $BUILD_TOOL_DEST
-echo "-----> Downloading Force.com test client version $DRIVER_VERSION"
+status "Downloading Force.com test client version $DRIVER_VERSION"
 wget -q $BUILD_TOOL_URL -O $BUILD_TOOL_JAR
 
-
-echo "-----> Setting up Force.com for release phase deployment."
+status "Setting up Force.com"
 
 cat > $SALESFORCE_DIR/deploy << EOF
 if [[ \$SALESFORCE_URL ]]
 then
-  echo "Deploying Force.com application"
-  java -cp .salesforce/lib/$JAR_NAME Main 
+  echo "Deploying Force.com application" | indent
+  #java -cp .salesforce/lib/$JAR_NAME Main
 else
-  echo "Force.com deployment failed because SALESFORCE_URL is not configured"
+  error "Force.com deployment failed because SALESFORCE_URL is not configured"
   exit 1
 fi
 EOF

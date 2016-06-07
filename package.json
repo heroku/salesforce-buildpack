@@ -1,0 +1,19 @@
+{
+  "name": "force-com-buildpack",
+  "version": "1.0.0",
+  "description": "Build pack for force.com packages",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/forcedotcom/force-com-buildpack.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/forcedotcom/force-com-buildpack/issues"
+  },
+  "homepage": "https://github.com/forcedotcom/force-com-buildpack#readme",
+  "dependencies": {
+    "bluebird": "^3.4.0",
+    "jsforce": "^1.6.5"
+  }
+}
