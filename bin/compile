@@ -15,7 +15,11 @@ CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
 
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
-SALESFORCE_DIR=$BUILD_DIR/.salesforce
+
+### Configure salesforce directories
+SALESFORCE_DIR_NAME=".salesforce"
+SALESFORCE_DIR=$BUILD_DIR/$SALESFORCE_DIR_NAME
+SALESFORCE_CACHE_DIR=$CACHE_DIR/$SALESFORCE_DIR_NAME
 
 ### Load dependencies
 
@@ -27,21 +31,30 @@ source $BP_DIR/lib/node.sh
 status "Exporting config vars to environment"
 export_env_dir
 
-install_nodejs $SALESFORCE_DIR
+install_nodejs $SALESFORCE_CACHE_DIR
 
 status "Coping deploy script to .salesforce/deploy"
-cp $BP_DIR/lib/deploy.js $SALESFORCE_DIR/deploy
+cp $BP_DIR/lib/deploy.js $SALESFORCE_DIR/deploy.js
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
+
+echo "node ./.salesforce/deploy.js" > $SALESFORCE_DIR/deploy
+chmod +x $SALESFORCE_DIR/deploy
 
 status "Installing modules"
 cd $SALESFORCE_DIR
 npm install | indent
 
-status "Building ZIP from salesforce/src to .salesforce/src.zip"
-mkdir -p metadata
-rm -rf metadata/*
-cp -r $BUILD_DIR/salesforce/src/ metadata
-zip -r $SALESFORCE_DIR/src.zip metadata | indent
+# Allow the user to specify the salesforce source. We only want to zip one
+# level above the source, and zip includes relative paths. So we first cd one
+# level above, the SRC_DIR, then zip the source folder, the SRC_FOLDER.
+SRC_PATH=${SALESFORCE_SRC_PATH:-"salesforce/src"}
+SRC_DIR=$(dirname $SRC_PATH)
+SRC_FOLDER=$(basename $SRC_PATH)
+
+status "Building ZIP from $SRC_DIR to $SALESFORCE_DIR_NAME/src.zip"
+rm -f $SALESFORCE_DIR/src.zip
+cd $BUILD_DIR/$SRC_DIR
+zip -r $SALESFORCE_DIR/src.zip $SRC_FOLDER | indent
 
 echo ""
-echo "Configure your application to invoke 'node .salesforce/deploy' in your release phase script or Procfile"
+echo "Configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script or Procfile"
