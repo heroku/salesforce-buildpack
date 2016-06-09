@@ -1,5 +1,9 @@
 create_signature() {
-  echo "$(node --version)"
+  if hash node 2>/dev/null; then
+    echo "$(node --version)"
+  else
+    echo "missing node"
+  fi
 }
 
 save_signature() {

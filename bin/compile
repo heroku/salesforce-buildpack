@@ -31,6 +31,8 @@ source $BP_DIR/lib/node.sh
 status "Exporting config vars to environment"
 export_env_dir
 
+mkdir -p $SALESFORCE_DIR
+
 install_nodejs $SALESFORCE_CACHE_DIR
 
 status "Coping deploy script to .salesforce/deploy"
