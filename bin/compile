@@ -39,7 +39,7 @@ status "Coping deploy script to .salesforce/deploy"
 cp $BP_DIR/lib/deploy.js $SALESFORCE_DIR/deploy.js
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
 
-echo "$SALESFORCE_CACHE_DIR/node/bin/node .salesforce/deploy.js" > $SALESFORCE_DIR/deploy
+echo "$SALESFORCE_DIR/node/bin/node .salesforce/deploy.js" > $SALESFORCE_DIR/deploy
 chmod +x $SALESFORCE_DIR/deploy
 
 status "Installing modules"
