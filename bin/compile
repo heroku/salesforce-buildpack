@@ -34,6 +34,9 @@ export_env_dir
 mkdir -p $SALESFORCE_DIR
 
 install_nodejs $SALESFORCE_CACHE_DIR
+# Put node in build dir since the cache is not available at time of deploy
+cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
+export PATH="$SALESFORCE_DIR/node/bin":$PATH
 
 status "Coping deploy script to .salesforce/deploy"
 cp $BP_DIR/lib/deploy.js $SALESFORCE_DIR/deploy.js

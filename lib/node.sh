@@ -31,8 +31,6 @@ install_nodejs() {
   local version=5.11.1
   local version_str="v$version-$(get_os)-$(get_cpu)"
 
-  export PATH="$dir/bin":$PATH
-
   if [ "$(create_signature)" != "$(load_signature $dir)" ]; then
     status "Downloading and installing node $version..."
     mkdir -p "$dir"
