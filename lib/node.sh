@@ -20,7 +20,7 @@ load_signature() {
   fi
 }
 
-# Get the node binary from the heroku. Similar to how heroku does it but
+# Get the node binary from Heroku. Similar to how Heroku does it but
 # without package.json resolution for the node version, since we only need
 # to install node to make this build pack work, not to support customer
 # node scripts. See the following for reference
@@ -28,7 +28,7 @@ load_signature() {
 # Referenced from https://github.com/heroku/heroku-buildpack-nodejs/blob/master/lib/binaries.sh
 install_nodejs() {
   local dir="$1/node"
-  local version=5.11.1
+  local version=6.2.2
   local version_str="v$version-$(get_os)-$(get_cpu)"
 
   if [ "$(create_signature)" != "$(load_signature $dir)" ]; then
