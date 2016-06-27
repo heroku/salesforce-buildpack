@@ -39,8 +39,7 @@ cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
 export PATH="$SALESFORCE_DIR/node/bin":$PATH
 
 status "Coping deploy script to .salesforce/deploy"
-cp $BP_DIR/lib/deploy.js $SALESFORCE_DIR/deploy.js
-cp $BP_DIR/lib/auth.js $SALESFORCE_DIR/auth.js
+cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
 
 echo ".salesforce/node/bin/node .salesforce/deploy.js" > $SALESFORCE_DIR/deploy
