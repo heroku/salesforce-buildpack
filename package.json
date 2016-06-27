@@ -14,6 +14,7 @@
   "homepage": "https://github.com/forcedotcom/force-com-buildpack#readme",
   "dependencies": {
     "bluebird": "^3.4.0",
-    "jsforce": "^1.6.5"
+    "jsforce": "^1.6.5",
+    "request": "^2.72.0"
   }
 }
