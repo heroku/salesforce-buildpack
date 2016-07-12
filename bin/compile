@@ -38,7 +38,7 @@ install_nodejs $SALESFORCE_CACHE_DIR
 cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
 export PATH="$SALESFORCE_DIR/node/bin":$PATH
 
-status "Coping deploy script to .salesforce/deploy"
+status "Copying deploy script to .salesforce/deploy"
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
 
