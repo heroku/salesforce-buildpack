@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/forcedotcom/force-com-buildpack#readme",
   "dependencies": {
-    "jsforce": "^1.6.5",
-    "node-fetch": "^1.5.3"
+    "jsforce-deploy": "git+https://github.com/ntblack/jsforce-deploy.git",
+    "jsforce-connection": "git+https://github.com/ntblack/jsforce-connection.git"
   }
 }

@@ -49,17 +49,5 @@ status "Installing modules"
 cd $SALESFORCE_DIR
 npm install | indent
 
-# Allow the user to specify the salesforce source. We only want to zip one
-# level above the source, and zip includes relative paths. So we first cd one
-# level above, the SRC_DIR, then zip the source folder, the SRC_FOLDER.
-SRC_PATH=${SALESFORCE_SRC_PATH:-"salesforce/src"}
-SRC_DIR=$(dirname $SRC_PATH)
-SRC_FOLDER=$(basename $SRC_PATH)
-
-status "Building ZIP from $SRC_DIR to $SALESFORCE_DIR_NAME/src.zip"
-rm -f $SALESFORCE_DIR/src.zip
-cd $BUILD_DIR/$SRC_DIR
-zip -r $SALESFORCE_DIR/src.zip $SRC_FOLDER | indent
-
 echo ""
 echo "Configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script or Procfile"
