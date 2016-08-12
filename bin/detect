@@ -6,5 +6,8 @@ if [ -f $1/config.json ]; then
   echo "Force.com Application (AC/DX)"
   exit 0
 else
+  # TODO: support metadata api deploys (find package.xml?)
+  # REVIEWME: 'workspace source'??
+  echo "Expected Force.com Application workspace source: config.json not found"
   exit 1
 fi
