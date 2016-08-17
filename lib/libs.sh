@@ -12,11 +12,11 @@ install_libsecret() {
     status "Installing secret... "
     apt-get $APT_OPTIONS update | indent
     apt-get $APT_OPTIONS -y --force-yes -d install --reinstall libsecret-tools | indent
-    mkdir -p $BUILD_DIR/.profile.d
+    #mkdir -p $BUILD_DIR/.profile.d
 
     export PATH="$HOME/.apt/usr/bin:$PATH"
     echo $PATH
-    ls $HOME/.apt/usr/bin
+    ls $APT_CACHE_DIR/archives/
 
     for DEB in $(ls -1 $APT_CACHE_DIR/archives/*.deb); do
         echo "Installing $DEB..."
