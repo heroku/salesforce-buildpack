@@ -76,5 +76,3 @@ $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 # REVIEWME: echo before 'force.js compile' call?
 echo ""
 echo "Configure your application to invoke '$SALESFORCE_DIR/deploy' in your release phase script or Procfile"
-
-
