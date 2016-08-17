@@ -23,8 +23,9 @@ SALESFORCE_CACHE_DIR=$CACHE_DIR/$SALESFORCE_DIR_NAME
 source $BP_DIR/lib/common.sh
 source $BP_DIR/lib/node.sh
 
-status "### Welcome to Salesforce Buildpack!!"
-echo
+echo ""
+status "Welcome to Salesforce Buildpack!!"
+echo ""
 
 # present of files below determine how we handle deployment
 if [ -f $1/salesforce/src/package.xml ]; then
