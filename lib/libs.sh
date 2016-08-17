@@ -15,8 +15,11 @@ install_libsecret() {
     mkdir -p $BUILD_DIR/.profile.d
 
     export PATH="$HOME/.apt/usr/bin:$PATH"
+    echo $PATH
+    which secret-tool
 
     for DEB in $(ls -1 $APT_CACHE_DIR/archives/*.deb); do
+        echo "Installing $DEB..."
         dpkg -x $DEB $BUILD_DIR/.apt/
     done
 
