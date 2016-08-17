@@ -17,9 +17,9 @@ install_libsecret() {
     export PATH="$HOME/.apt/usr/bin:$PATH"
 
     for DEB in $(ls -1 $APT_CACHE_DIR/archives/*.deb); do
-        echo "Installing $DEB..."
+        log "Installing $DEB..."
         dpkg --debug=1 -x $DEB $BUILD_DIR/.apt/
     done
 
-    ls $HOME/.apt/usr/bin
+    ls $HOME/.apt
 }
