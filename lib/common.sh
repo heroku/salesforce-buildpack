@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 get_os() {
   uname | tr A-Z a-z
 }

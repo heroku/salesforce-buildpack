@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 create_signature() {
   if hash node 2>/dev/null; then
     echo "$(node --version)"
