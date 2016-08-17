@@ -12,9 +12,6 @@ install_libsecret() {
     status "Installing secret... "
     apt-get $APT_OPTIONS update | indent
     apt-get $APT_OPTIONS -y --force-yes -d install --reinstall libsecret-tools | indent
-    #mkdir -p $BUILD_DIR/.profile.d
-
-    export PATH="$HOME/.apt/usr/bin:$PATH"
 
     for DEB in $(ls -1 $APT_CACHE_DIR/archives/*.deb); do
         log "Installing $DEB..."
@@ -22,4 +19,6 @@ install_libsecret() {
     done
 
     log `find $BUILD_DIR/.apt -name secret-tool`
+    export SECRET_TOOL_PATH=`find $BUILD_DIR/.apt -name secret-tool`
+    export PATH="$BUILD_DIR/.apt/usr/bin:$PATH"
 }
