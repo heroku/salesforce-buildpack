@@ -9,11 +9,9 @@ set -o nounset    # fail on unset variables
 unset GIT_DIR     # Avoid GIT_DIR leak from previous build steps
 
 ### Configure directories
-
 BUILD_DIR=${1:-}
 CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
-
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
 ### Configure salesforce directories
@@ -22,32 +20,53 @@ SALESFORCE_DIR=$BUILD_DIR/$SALESFORCE_DIR_NAME
 SALESFORCE_CACHE_DIR=$CACHE_DIR/$SALESFORCE_DIR_NAME
 
 ### Load dependencies
-
 source $BP_DIR/lib/common.sh
 source $BP_DIR/lib/node.sh
 
-### Compile
+# present of files below determine how we handle deployment
+if [ -f $1/salesforce/src/package.xml ]; then
+    status "Found Force.com Metadata API project"
+    export SALESFORCE_WORKSPACE=false
+elif [ -f $1/config.json ]; then
+    status "Found Force.com workspace project"
+    export SALESFORCE_WORKSPACE=true
+fi
 
+### Compile
 status "Exporting config vars to environment"
 export_env_dir
 
 mkdir -p $SALESFORCE_DIR
+export SALESFORCE_DIR=$SALESFORCE_DIR
 
 install_nodejs $SALESFORCE_CACHE_DIR
 # Put node in build dir since the cache is not available at time of deploy
 cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
 export PATH="$SALESFORCE_DIR/node/bin":$PATH
 
-status "Copying deploy script to .salesforce/deploy"
+status "Generating deploy script to $SALESFORCE_DIR/deploy"
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
 
-echo ".salesforce/node/bin/node .salesforce/deploy.js" > $SALESFORCE_DIR/deploy
+# write script triggering node-based deployment to-be-invoked bin/release
+echo "$SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js release" > $SALESFORCE_DIR/deploy
 chmod +x $SALESFORCE_DIR/deploy
 
 status "Installing modules"
 cd $SALESFORCE_DIR
 npm install | indent
 
+# double-check that node is installed
+if [ ! -f $SALESFORCE_DIR/node/bin/node ]; then
+    status "! Node not found at $SALESFORCE_DIR/node/bin/node"
+    exit 1
+fi
+
+# delegate actual source deployment to node script
+$SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
+
+# REVIEWME: echo before 'force.js compile' call?
 echo ""
-echo "Configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script or Procfile"
+echo "Configure your application to invoke '$SALESFORCE_DIR/deploy' in your release phase script or Procfile"
+
+
