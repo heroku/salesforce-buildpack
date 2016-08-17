@@ -16,5 +16,9 @@ install_libsecret() {
 
     export PATH="$HOME/.apt/usr/bin:$PATH"
 
-    ls -Llsrt $HOME/.apt/usr/bin
+    for DEB in $(ls -1 $APT_CACHE_DIR/archives/*.deb); do
+        dpkg -x $DEB $BUILD_DIR/.apt/
+    done
+
+    which secret-tool
 }
