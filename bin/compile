@@ -30,10 +30,10 @@ echo ""
 
 # present of files below determine how we handle deployment
 if [ -f $1/salesforce/src/package.xml ]; then
-    echo "Found Force.com Metadata API project"
+    log "Found Force.com Metadata API project"
     export SALESFORCE_WORKSPACE=false
 elif [ -f $1/config.json ]; then
-    echo "Found Force.com workspace project"
+    log "Found Force.com workspace project"
     export SALESFORCE_WORKSPACE=true
 fi
 

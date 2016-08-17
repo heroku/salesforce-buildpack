@@ -21,6 +21,10 @@ status() {
   echo "-----> $*"
 }
 
+log() {
+  echo "       $*"
+}
+
 # sed -l basically makes sed replace and buffer through stdin to stdout
 # so you get updates while the command runs and dont wait for the end
 # e.g. npm install | indent
