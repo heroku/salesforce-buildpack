@@ -21,5 +21,5 @@ install_libsecret() {
         dpkg --debug=1 -x $DEB $BUILD_DIR/.apt/
     done
 
-    ls $HOME/.apt
+    ls $BUILD_DIR/.apt
 }
