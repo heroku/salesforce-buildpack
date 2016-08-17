@@ -11,7 +11,7 @@ install_libsecret() {
 
     status "Installing secret... "
     apt-get $APT_OPTIONS update | indent
-    apt-get $APT_OPTIONS -y --force-yes -d install --reinstall libsecret | indent
+    apt-get $APT_OPTIONS -y --force-yes -d install --reinstall libsecret-tools | indent
     mkdir -p $BUILD_DIR/.profile.d
 
     export PATH="\$HOME/.apt/usr/bin:\$PATH"
