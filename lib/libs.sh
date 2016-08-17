@@ -21,5 +21,5 @@ install_libsecret() {
         dpkg --debug=1 -x $DEB $BUILD_DIR/.apt/
     done
 
-    ls $BUILD_DIR/.apt
+    log `find $BUILD_DIR/.apt -name secret-tool`
 }
