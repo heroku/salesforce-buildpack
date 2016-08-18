@@ -68,7 +68,8 @@ if [ ! -f $SALESFORCE_DIR/node/bin/node ]; then
 fi
 
 # install secret tool used by appcloud
-install_libsecret
+# FIXME: disabled for now
+#install_libsecret
 
 # delegate actual source deployment to node script
 $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
