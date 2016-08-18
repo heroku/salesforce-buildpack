@@ -53,13 +53,23 @@ status "Generating release phase deploy script to $SALESFORCE_DIR/deploy"
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
 # write script triggering node-based deployment to-be-invoked bin/release
-echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js release" > $SALESFORCE_DIR/deploy
+echo "export SALESFORCE_WORKSPACE=$SALESFORCE_WORKSPACE" > $SALESFORCE_DIR/deploy
+echo "export SALESFORCE_BUILDPACK_VERBOSE=$SALESFORCE_BUILDPACK_VERBOSE" >> $SALESFORCE_DIR/deploy
+echo "export SALESFORCE_DIR=$SALESFORCE_DIR" >> $SALESFORCE_DIR/deploy
+# not needed for release, but adding until release is broken out from force.js
+echo "export HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $SALESFORCE_DIR/deploy
+echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js release" >> $SALESFORCE_DIR/deploy
 chmod +x $SALESFORCE_DIR/deploy
 log "Script: `cat $SALESFORCE_DIR/deply`"
 
 status "Generating test phase script to $SALESFORCE_DIR/test"
 # write script to-be-invoked via test phase per app.json
-echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js test" > $SALESFORCE_DIR/test
+echo "export SALESFORCE_WORKSPACE=$SALESFORCE_WORKSPACE" > $SALESFORCE_DIR/deploy
+echo "export SALESFORCE_BUILDPACK_VERBOSE=$SALESFORCE_BUILDPACK_VERBOSE" >> $SALESFORCE_DIR/deploy
+echo "export SALESFORCE_DIR=$SALESFORCE_DIR" >> $SALESFORCE_DIR/deploy
+# not needed for release, but adding until release is broken out from force.js
+echo "export HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $SALESFORCE_DIR/deploy
+echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js test" >> $SALESFORCE_DIR/test
 chmod +x $SALESFORCE_DIR/test
 log "Script: `cat $SALESFORCE_DIR/test`"
 
