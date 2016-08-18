@@ -55,7 +55,8 @@ cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
 # write script triggering node-based deployment to-be-invoked bin/release
 echo "export SALESFORCE_WORKSPACE=$SALESFORCE_WORKSPACE" > $SALESFORCE_DIR/deploy
 echo "export SALESFORCE_BUILDPACK_VERBOSE=$SALESFORCE_BUILDPACK_VERBOSE" >> $SALESFORCE_DIR/deploy
-echo "export SALESFORCE_DIR=$SALESFORCE_DIR" >> $SALESFORCE_DIR/deploy
+# relative dir as BUILD_DIR not same in release phase
+echo "export SALESFORCE_DIR=$SALESFORCE_DIR_NAME" >> $SALESFORCE_DIR/deploy
 # not needed for release, but adding until release is broken out from force.js
 echo "export HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $SALESFORCE_DIR/deploy
 echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js release" >> $SALESFORCE_DIR/deploy
@@ -66,7 +67,8 @@ status "Generating test phase script to $SALESFORCE_DIR/test"
 # write script to-be-invoked via test phase per app.json
 echo "export SALESFORCE_WORKSPACE=$SALESFORCE_WORKSPACE" > $SALESFORCE_DIR/test
 echo "export SALESFORCE_BUILDPACK_VERBOSE=$SALESFORCE_BUILDPACK_VERBOSE" >> $SALESFORCE_DIR/test
-echo "export SALESFORCE_DIR=$SALESFORCE_DIR" >> $SALESFORCE_DIR/test
+# relative dir as BUILD_DIR not same in test phase
+echo "export SALESFORCE_DIR=$SALESFORCE_DIR_NAME" >> $SALESFORCE_DIR/test
 # not needed for release, but adding until release is broken out from force.js
 echo "export HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $SALESFORCE_DIR/test
 echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js test" >> $SALESFORCE_DIR/test
