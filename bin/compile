@@ -49,7 +49,7 @@ install_nodejs $SALESFORCE_CACHE_DIR
 cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
 export PATH="$SALESFORCE_DIR/node/bin":$PATH
 
-// set defaults for optional config vars
+# set defaults for optional config vars
 if [[ ! -v SALESFORCE_BYOO ]]; then
    SALESFORCE_BYOO=false
 fi
