@@ -14,6 +14,6 @@
   "homepage": "https://github.com/heroku/salesforce-buildpack#readme",
   "dependencies": {
     "bluebird": "3.4.0",
-    "salesforce-alm-buildpack-dev": "0.0.6"
+    "salesforce-alm-buildpack-dev": "0.0.7"
   }
 }

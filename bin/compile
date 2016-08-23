@@ -49,11 +49,12 @@ install_nodejs $SALESFORCE_CACHE_DIR
 cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
 export PATH="$SALESFORCE_DIR/node/bin":$PATH
 
-status "Generating release phase deploy script to $SALESFORCE_DIR/deploy"
+status "Generating release phase deploy script to $SALESFORCE_DIR_NAME/deploy"
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
 # write script triggering node-based deployment to-be-invoked bin/release
 echo "export SALESFORCE_WORKSPACE=$SALESFORCE_WORKSPACE" > $SALESFORCE_DIR/deploy
+echo "export SALESFORCE_BYOO=$SALESFORCE_BYOO" >> $SALESFORCE_DIR/deploy
 echo "export SALESFORCE_BUILDPACK_VERBOSE=$SALESFORCE_BUILDPACK_VERBOSE" >> $SALESFORCE_DIR/deploy
 # relative dir as BUILD_DIR not same in release phase
 echo "export SALESFORCE_DIR=$SALESFORCE_DIR_NAME" >> $SALESFORCE_DIR/deploy
@@ -63,7 +64,7 @@ echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js release" 
 chmod +x $SALESFORCE_DIR/deploy
 log "Script: `cat $SALESFORCE_DIR/deploy`"
 
-status "Generating test phase script to $SALESFORCE_DIR/test"
+status "Generating test phase script to $SALESFORCE_DIR_NAME/test"
 # write script to-be-invoked via test phase per app.json
 echo "export SALESFORCE_WORKSPACE=$SALESFORCE_WORKSPACE" > $SALESFORCE_DIR/test
 echo "export SALESFORCE_BUILDPACK_VERBOSE=$SALESFORCE_BUILDPACK_VERBOSE" >> $SALESFORCE_DIR/test
@@ -75,7 +76,7 @@ echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js test" >> 
 chmod +x $SALESFORCE_DIR/test
 log "Script: `cat $SALESFORCE_DIR/test`"
 
-status "Installing modules"
+status "Installing node modules"
 cd $SALESFORCE_DIR
 npm install | indent
 
@@ -90,9 +91,11 @@ fi
 #install_libsecret
 
 # delegate actual source deployment to node script
+status "Invoking $SALESFORCE_DIR/force.js compile phase..."
 $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 
 # REVIEWME: echo before 'force.js compile' call?
 echo ""
-echo "Configure your application to invoke '$SALESFORCE_DIR/test' in your test section of app.json to run all Apex test via Heroku CI"
-echo "Configure your application to invoke '$SALESFORCE_DIR/deploy' in your release phase script or Procfile"
+echo "To test, configure your application to invoke '$SALESFORCE_DIR_NAME/test' in your test section of app.json to run Apex tests via Heroku CI"
+echo ""
+echo "To deploy source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script or Procfile"
