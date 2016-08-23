@@ -49,6 +49,10 @@ install_nodejs $SALESFORCE_CACHE_DIR
 cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
 export PATH="$SALESFORCE_DIR/node/bin":$PATH
 
+if [[ ! -v SALESFORCE_BYOO ]]; then
+   SALESFORCE_BYOO=false
+fi
+
 status "Generating release phase deploy script to $SALESFORCE_DIR_NAME/deploy"
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
