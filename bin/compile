@@ -51,16 +51,16 @@ export PATH="$SALESFORCE_DIR/node/bin":$PATH
 
 # set defaults for optional config vars
 if [[ ! -v SALESFORCE_BYOO ]]; then
-   SALESFORCE_BYOO=false
+   export SALESFORCE_BYOO=false
 fi
 
 if [[ ! -v SALESFORCE_BUILDPACK_VERBOSE ]]; then
-   SALESFORCE_BUILDPACK_VERBOSE=false
+   export SALESFORCE_BUILDPACK_VERBOSE=false
 fi
 
 # FIXME: workaround for HEROKU_APP_NAME not provided by staging app
 if [[ ! -v HEROKU_APP_NAME ]]; then
-   HEROKU_APP_NAME=unknown
+   export HEROKU_APP_NAME=unknown
 fi
 
 status "Generating release phase deploy script to $SALESFORCE_DIR_NAME/deploy"
