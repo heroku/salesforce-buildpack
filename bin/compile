@@ -58,6 +58,11 @@ if [[ ! -v SALESFORCE_BUILDPACK_VERBOSE ]]; then
    SALESFORCE_BUILDPACK_VERBOSE=false
 fi
 
+# FIXME: workaround for HEROKU_APP_NAME not provided by staging app
+if [[ ! -v HEROKU_APP_NAME ]]; then
+   HEROKU_APP_NAME=unknown
+fi
+
 status "Generating release phase deploy script to $SALESFORCE_DIR_NAME/deploy"
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
