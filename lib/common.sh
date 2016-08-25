@@ -43,7 +43,7 @@ export_env_dir() {
     for e in $(ls $ENV_DIR); do
       echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
       export $e=$(cat $ENV_DIR/$e)
-      log "Set $e"
+      log "$e=($e)"
       :
     done
   fi
