@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # bin/compile <build-dir> <cache-dir> <env-dir>
 
+START_TIME=$SECONDS
+
 ### Configure environment
 
 set -o errexit    # always exit on error
@@ -112,7 +114,9 @@ fi
 status "Invoking $SALESFORCE_DIR/force.js compile phase..."
 $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 
-echo ""
+echo "After compile"
+deployMsg = "To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
+
 heroku_client=`which heroku`
 if [[ ! -z "$heroku_client" ]]; then
     status "Found Heroku CLI at $heroku_client"
@@ -120,19 +124,18 @@ if [[ ! -z "$heroku_client" ]]; then
     # FIXME: change to salesforce-alm
     $heroku_client plugins:install salesforce-alm-buildpack-dev
     $heroku_client plugins
-    echo
+    echo ""
+    highlight $deployMsg
     highlight "To TEST, configure your application to invoke AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json."
-    echo
     highlight "To IMPORT DATA into the org, configure your application to invoke AppCloud Plugin data command (force:data:import) in your release phase script."
 else
     status "Heroku CLI not found.  To use AppCloud Plugin commands in test and release phases, add 'heroku-buildpack-toolbelt' buildpack to app."
+    echo ""
+    highlight $deployMsg
     highlight "To TEST, configure your application to invoke '$SALESFORCE_DIR_NAME/test' in the test section your app.json to run Apex all tests."
 fi
 
-# REVIEWME: echo before 'force.js compile' call?
-echo ""
-highlight "To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
 echo ""
 echo ""
-highlight "DONE! Salesforce Buildpack bids you adieu!"
+highlight "DONE!  $(($SECONDS - $START_TIME))s"
 echo ""
