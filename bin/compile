@@ -25,7 +25,7 @@ source $BP_DIR/lib/node.sh
 source $BP_DIR/lib/libs.sh
 
 echo ""
-status "Welcome to Salesforce Buildpack!!"
+highlight "Welcome to Salesforce Buildpack!!"
 echo ""
 
 # present of files below determine how we handle deployment
@@ -44,6 +44,7 @@ export_env_dir
 mkdir -p $SALESFORCE_DIR
 export SALESFORCE_DIR=$SALESFORCE_DIR
 
+# REVIEWME: probably can remove if we use nodejs buildpack
 install_nodejs $SALESFORCE_CACHE_DIR
 # Put node in build dir since the cache is not available at time of deploy
 cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
@@ -51,16 +52,16 @@ export PATH="$SALESFORCE_DIR/node/bin":$PATH
 
 # set defaults for optional config vars
 if [[ ! -v SALESFORCE_BYOO ]]; then
-   export SALESFORCE_BYOO=false
+   export SALESFORCE_BYOO="false"
 fi
 
 if [[ ! -v SALESFORCE_BUILDPACK_VERBOSE ]]; then
-   export SALESFORCE_BUILDPACK_VERBOSE=false
+   export SALESFORCE_BUILDPACK_VERBOSE="false"
 fi
 
 # FIXME: workaround for HEROKU_APP_NAME not provided by staging app
 if [[ ! -v HEROKU_APP_NAME ]]; then
-   export HEROKU_APP_NAME=unknown
+   export HEROKU_APP_NAME="App Name Unknown"
 fi
 
 status "Generating release phase deploy script to $SALESFORCE_DIR_NAME/deploy"
@@ -76,7 +77,7 @@ echo "export SALESFORCE_DIR=$SALESFORCE_DIR_NAME" >> $SALESFORCE_DIR/deploy
 echo "export HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $SALESFORCE_DIR/deploy
 echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js release" >> $SALESFORCE_DIR/deploy
 chmod +x $SALESFORCE_DIR/deploy
-if [ "$SALESFORCE_BUILDPACK_VERBOSE" == true ]; then
+if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
     log "Script: `cat $SALESFORCE_DIR/deploy`"
 fi
 
@@ -90,18 +91,17 @@ echo "export SALESFORCE_DIR=$SALESFORCE_DIR_NAME" >> $SALESFORCE_DIR/test
 echo "export HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $SALESFORCE_DIR/test
 echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js test" >> $SALESFORCE_DIR/test
 chmod +x $SALESFORCE_DIR/test
-if [ "$SALESFORCE_BUILDPACK_VERBOSE" == true ]; then
-    log "Script: `cat $SALESFORCE_DIR/test`"
+if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
+    debug "Script: `cat $SALESFORCE_DIR/test`"
 fi
 
-status "Installing node modules"
+status "Installing node modules..."
 cd $SALESFORCE_DIR
 npm install | indent
 
 # double-check that node is installed
 if [ ! -f $SALESFORCE_DIR/node/bin/node ]; then
-    status "! Node not found at $SALESFORCE_DIR/node/bin/node"
-    exit 1
+    error "! Node not found at $SALESFORCE_DIR/node/bin/node"
 fi
 
 # install secret tool used by appcloud
@@ -112,12 +112,27 @@ fi
 status "Invoking $SALESFORCE_DIR/force.js compile phase..."
 $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 
+echo ""
+heroku_client=`which heroku`
+if [[ ! -z "$heroku_client" ]]; then
+    status "Found Heroku CLI at $heroku_client"
+    status "Installing AppCloud Plugin..."
+    # FIXME: change to salesforce-alm
+    $heroku_client plugins:install salesforce-alm-buildpack-dev
+    $heroku_client plugins
+    echo
+    highlight "To TEST, configure your application to invoke AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json."
+    echo
+    highlight "To IMPORT DATA into the org, configure your application to invoke AppCloud Plugin data command (force:data:import) in your release phase script."
+else
+    status "Heroku CLI not found.  To use AppCloud Plugin commands in test and release phases, add 'heroku-buildpack-toolbelt' buildpack to app."
+    highlight "To TEST, configure your application to invoke '$SALESFORCE_DIR_NAME/test' in the test section your app.json to run Apex all tests."
+fi
+
 # REVIEWME: echo before 'force.js compile' call?
 echo ""
-echo "To test, configure your application to invoke '$SALESFORCE_DIR_NAME/test' in your test section of app.json to run Apex tests via Heroku CI"
-echo ""
-echo "To deploy source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script or Procfile"
+highlight "To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
 echo ""
 echo ""
-status "DONE! Salesforce Buildpack bids you adieu!"
+highlight "DONE! Salesforce Buildpack bids you adieu!"
 echo ""

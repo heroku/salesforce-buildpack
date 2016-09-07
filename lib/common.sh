@@ -17,12 +17,20 @@ error() {
   exit 1
 }
 
+highlight() {
+  echo "=====> $*"
+}
+
 status() {
   echo "-----> $*"
 }
 
 log() {
   echo "       $*"
+}
+
+debug() {
+  echo "       [DEBUG] $*"
 }
 
 # sed -l basically makes sed replace and buffer through stdin to stdout
