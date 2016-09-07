@@ -114,10 +114,11 @@ fi
 status "Invoking $SALESFORCE_DIR/force.js compile phase..."
 $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 
-echo "After compile"
-deployMsg = "To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
+echo ""
+DEPLOY_MSG="To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
 
 heroku_client=`which heroku`
+echo "heroku_client: $heroku_client"
 if [[ ! -z "$heroku_client" ]]; then
     status "Found Heroku CLI at $heroku_client"
     status "Installing AppCloud Plugin..."
@@ -125,13 +126,13 @@ if [[ ! -z "$heroku_client" ]]; then
     $heroku_client plugins:install salesforce-alm-buildpack-dev
     $heroku_client plugins
     echo ""
-    highlight $deployMsg
+    highlight "$DEPLOY_MSG"
     highlight "To TEST, configure your application to invoke AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json."
     highlight "To IMPORT DATA into the org, configure your application to invoke AppCloud Plugin data command (force:data:import) in your release phase script."
 else
     status "Heroku CLI not found.  To use AppCloud Plugin commands in test and release phases, add 'heroku-buildpack-toolbelt' buildpack to app."
     echo ""
-    highlight $deployMsg
+    highlight "$DEPLOY_MSG"
     highlight "To TEST, configure your application to invoke '$SALESFORCE_DIR_NAME/test' in the test section your app.json to run Apex all tests."
 fi
 
