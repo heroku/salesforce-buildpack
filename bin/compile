@@ -104,22 +104,21 @@ DEPLOY_MSG="To DEPLOY source to org, configure your application to invoke '$SALE
 
 cd $BUILD_DIR
 HEROKU_PATH=vendor/heroku-toolbelt/bin
-ls *
-ls $HEROKU_PATH
 export PATH="$PATH:$HEROKU_PATH"
-log "PATH=$PATH"
 HEROKU_CLIENT="$HEROKU_PATH/heroku"
 if type "$HEROKU_CLIENT" &> /dev/null; then
     log "Found Heroku CLI at $HEROKU_CLIENT"
     status "Installing AppCloud Plugin..."
     # FIXME: change to salesforce-alm
     $HEROKU_CLIENT plugins:install salesforce-alm-buildpack-dev
-    $HEROKU_CLIENT plugins
+    # $HEROKU_CLIENT plugins
+    status "### N O T E ###"
     highlight "$DEPLOY_MSG"
-    highlight "To TEST, configure your application to invoke Heroku CLI AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json.  Eg:"
+    highlight "To TEST, configure your app to invoke Heroku CLI AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json.  Eg:"
     highlight "    $ heroku force:apex:test [params]"
-    highlight "To IMPORT DATA into the org, configure your application to invoke Heroku CLI AppCloud Plugin data command (force:data:import) in your release phase script.  Eg:"
+    highlight "To IMPORT DATA into the org, configure your app to invoke Heroku CLI AppCloud Plugin data command (force:data:import) in your release phase script.  Eg:"
     highlight "    $ heroku force:data:import [params]"
+    status "###############"
 else
     log "Heroku CLI not found."
     log "To use AppCloud Plugin commands in test and release phases, add 'heroku-buildpack-toolbelt' buildpack to app."
@@ -140,7 +139,7 @@ else
 
     echo ""
     highlight "$DEPLOY_MSG"
-    highlight "To run all Apex tests, configure your application to invoke '$SALESFORCE_DIR_NAME/test' via 'test' in your app.json."
+    highlight "To run all Apex tests, configure your app to invoke '$SALESFORCE_DIR_NAME/test' via 'test' in your app.json."
 fi
 
 highlight "DONE!  Completed in $(($SECONDS - $START_TIME))s"
