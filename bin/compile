@@ -83,20 +83,6 @@ if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
     debug "Script: `cat $SALESFORCE_DIR/deploy`"
 fi
 
-status "Generating test phase script to $SALESFORCE_DIR_NAME/test"
-# write script to-be-invoked via test phase per app.json
-echo "export SALESFORCE_WORKSPACE=$SALESFORCE_WORKSPACE" > $SALESFORCE_DIR/test
-echo "export SALESFORCE_BUILDPACK_VERBOSE=$SALESFORCE_BUILDPACK_VERBOSE" >> $SALESFORCE_DIR/test
-# relative dir as BUILD_DIR not same in test phase
-echo "export SALESFORCE_DIR=$SALESFORCE_DIR_NAME" >> $SALESFORCE_DIR/test
-# not needed for release, but adding until release is broken out from force.js
-echo "export HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $SALESFORCE_DIR/test
-echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js test" >> $SALESFORCE_DIR/test
-chmod +x $SALESFORCE_DIR/test
-if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
-    debug "Script: `cat $SALESFORCE_DIR/test`"
-fi
-
 status "Installing node modules..."
 cd $SALESFORCE_DIR
 npm install | indent
@@ -116,6 +102,9 @@ $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 
 DEPLOY_MSG="To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
 
+HEROKU_PATH=vendor/heroku-toolbelt/bin
+export PATH=$PATH:"$HEROKU_PATH"
+log "PATH=$PATH"
 HEROKU_CLIENT=heroku
 if type "$HEROKU_CLIENT" &> /dev/null; then
     log "Found Heroku CLI at $heroku_client"
@@ -129,9 +118,24 @@ if type "$HEROKU_CLIENT" &> /dev/null; then
 else
     log "Heroku CLI not found."
     log "To use AppCloud Plugin commands in test and release phases, add 'heroku-buildpack-toolbelt' buildpack to app."
+
+    status "Generating test phase script to $SALESFORCE_DIR_NAME/test"
+    # write script to-be-invoked via test phase per app.json
+    echo "export SALESFORCE_WORKSPACE=$SALESFORCE_WORKSPACE" > $SALESFORCE_DIR/test
+    echo "export SALESFORCE_BUILDPACK_VERBOSE=$SALESFORCE_BUILDPACK_VERBOSE" >> $SALESFORCE_DIR/test
+    # relative dir as BUILD_DIR not same in test phase
+    echo "export SALESFORCE_DIR=$SALESFORCE_DIR_NAME" >> $SALESFORCE_DIR/test
+    # not needed for release, but adding until release is broken out from force.js
+    echo "export HEROKU_APP_NAME=$HEROKU_APP_NAME" >> $SALESFORCE_DIR/test
+    echo "$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js test" >> $SALESFORCE_DIR/test
+    chmod +x $SALESFORCE_DIR/test
+    if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
+        debug "Script: `cat $SALESFORCE_DIR/test`"
+    fi
+
     echo ""
     highlight "$DEPLOY_MSG"
-    highlight "To TEST, configure your application to invoke '$SALESFORCE_DIR_NAME/test' in the test section your app.json to run Apex all tests."
+    highlight "To run all Apex tests, configure your application to invoke '$SALESFORCE_DIR_NAME/test' via 'test' in your app.json."
 fi
 
 highlight "DONE!  Completed in $(($SECONDS - $START_TIME))s"
