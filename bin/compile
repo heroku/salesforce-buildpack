@@ -111,7 +111,8 @@ if type "$HEROKU_CLIENT" &> /dev/null; then
     status "Installing AppCloud Plugin..."
     # FIXME: change to salesforce-alm
     $HEROKU_CLIENT plugins:install salesforce-alm-buildpack-dev
-    # $HEROKU_CLIENT plugins
+    $HEROKU_CLIENT plugins
+    $HEROKU_CLIENT sf --help
     highlight "### N O T E ###"
     highlight "$DEPLOY_MSG"
     highlight "To TEST, configure your app to invoke AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json.  Eg:"
