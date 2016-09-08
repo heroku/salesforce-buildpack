@@ -110,7 +110,7 @@ if type "$HEROKU_CLIENT" &> /dev/null; then
     log "Found Heroku CLI at $HEROKU_CLIENT"
     status "Installing AppCloud Plugin..."
     # FIXME: change to salesforce-alm
-    $HEROKU_CLIENT plugins:install salesforce-alm-buildpack-dev
+    $HEROKU_CLIENT plugins:install salesforce-alm-dev
     $HEROKU_CLIENT plugins
     $HEROKU_CLIENT --help
     #$HEROKU_CLIENT force --help
