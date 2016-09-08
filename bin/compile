@@ -103,9 +103,10 @@ $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 DEPLOY_MSG="To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
 
 HEROKU_PATH=/app/vendor/heroku-toolbelt/bin
+ls $HEROKU_PATH
 export PATH=$PATH:"$HEROKU_PATH"
 log "PATH=$PATH"
-HEROKU_CLIENT=heroku
+HEROKU_CLIENT="$HEROKU_PATH/heroku"
 if type "$HEROKU_CLIENT" &> /dev/null; then
     log "Found Heroku CLI at $heroku_client"
     status "Installing AppCloud Plugin..."
