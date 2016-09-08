@@ -118,10 +118,8 @@ echo ""
 DEPLOY_MSG="To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
 
 echo "Before which"
-heroku_client=`which heroku`
-echo "After which"
-echo "heroku_client: $heroku_client"
-if [[ ! -z "$heroku_client" ]]; then
+HEROKU_CLIENT=heroku
+if type "$HEROKU_CLIENT" &> /dev/null; then
     log "Found Heroku CLI at $heroku_client"
     status "Installing AppCloud Plugin..."
     # FIXME: change to salesforce-alm
@@ -129,8 +127,8 @@ if [[ ! -z "$heroku_client" ]]; then
     $heroku_client plugins
     echo ""
     highlight "$DEPLOY_MSG"
-    highlight "To TEST, configure your application to invoke AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json."
-    highlight "To IMPORT DATA into the org, configure your application to invoke AppCloud Plugin data command (force:data:import) in your release phase script."
+    highlight "To TEST, configure your application to invoke Heroku CLI AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json."
+    highlight "To IMPORT DATA into the org, configure your application to invoke Heroku CLI AppCloud Plugin data command (force:data:import) in your release phase script."
 else
     log "Heroku CLI not found.  To use AppCloud Plugin commands in test and release phases, add 'heroku-buildpack-toolbelt' buildpack to app."
     status "To use AppCloud Plugin commands in test and release phases, add 'heroku-buildpack-toolbelt' buildpack to app."
