@@ -112,13 +112,13 @@ if type "$HEROKU_CLIENT" &> /dev/null; then
     # FIXME: change to salesforce-alm
     $HEROKU_CLIENT plugins:install salesforce-alm-buildpack-dev
     # $HEROKU_CLIENT plugins
-    status "### N O T E ###"
+    highlight "### N O T E ###"
     highlight "$DEPLOY_MSG"
-    highlight "To TEST, configure your app to invoke Heroku CLI AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json.  Eg:"
+    highlight "To TEST, configure your app to invoke AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json.  Eg:"
     highlight "    $ heroku force:apex:test [params]"
-    highlight "To IMPORT DATA into the org, configure your app to invoke Heroku CLI AppCloud Plugin data command (force:data:import) in your release phase script.  Eg:"
+    highlight "To IMPORT DATA into the org, configure your app to invoke AppCloud Plugin data command (force:data:import) in your release phase script.  Eg:"
     highlight "    $ heroku force:data:import [params]"
-    status "###############"
+    highlight "###############"
 else
     log "Heroku CLI not found."
     log "To use AppCloud Plugin commands in test and release phases, add 'heroku-buildpack-toolbelt' buildpack to app."
