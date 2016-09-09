@@ -100,13 +100,8 @@ fi
 #install_libsecret
 
 # delegate actual source deployment to node script
-export XDG_DATA_HOME="$SALESFORCE_DIR"
 status "Invoking $SALESFORCE_DIR/force.js compile phase..."
 $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
-
-#ls -l /app/.appcloud
-#cp -r /app/.appcloud $SALESFORCE_DIR_NAME
-#ls -l $SALESFORCE_DIR_NAME/*.*
 
 DEPLOY_MSG="To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
 
