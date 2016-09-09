@@ -110,6 +110,7 @@ $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 
 DEPLOY_MSG="To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
 
+VENDORED_HEROKU_CLI="vendor/heroku-cli"
 ls $BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/*
 export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
 echo "PATH=$PATH"
