@@ -104,9 +104,8 @@ if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
     debug "Script: `cat $SALESFORCE_DIR/deploy`"
 fi
 
-highlight "Installing Heroku CLI and AppCloud Plugin"
+status "Installing Heroku CLI and AppCloud Plugin"
 
-status "Fetching and vendoring Heroku CLI into slug..."
 # vendor directories
 VENDORED_HEROKU_CLI="vendor/heroku-cli"
 
@@ -124,8 +123,8 @@ fi
 
 export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
 export XDG_DATA_HOME="$BUILD_DIR/.local"
-status "Installing AppCloud Plugin..."
-heroku plugins:install salesforce-alm-dev
+
+heroku plugins:install salesforce-alm-buildpack-dev
 heroku plugins
 
 mkdir $BUILD_DIR/.profile.d
@@ -140,10 +139,10 @@ EOF
 status "Heroku CLI installation done"
 
 highlight "### N O T E ###"
-highlight "To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
-highlight "To TEST, configure your app to invoke AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json.  Eg:"
+highlight "To DEPLOY source to org, to invoke '$SALESFORCE_DIR_NAME/deploy' in Procfile or in your release phase script."
+highlight "To TEST, invoke AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json.  Eg:"
 highlight "    $ heroku force:apex:test [params]"
-highlight "To IMPORT DATA into the org, configure your app to invoke AppCloud Plugin data command (force:data:import) in your release phase script.  Eg:"
+highlight "To IMPORT DATA, invoke AppCloud Plugin data command (force:data:import) in your release phase script.  Eg:"
 highlight "    $ heroku force:data:import [params]"
 highlight "###############"
 
