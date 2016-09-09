@@ -97,7 +97,7 @@ fi
 #install_libsecret
 
 # delegate actual source deployment to node script
-export XDG_DATA_HOME="$SALESFORCE_DIR_NAME"
+export XDG_DATA_HOME="$SALESFORCE_DIR"
 status "Invoking $SALESFORCE_DIR/force.js compile phase..."
 $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 
