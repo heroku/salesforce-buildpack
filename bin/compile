@@ -40,7 +40,7 @@ elif [ -f $1/config.json ]; then
 fi
 
 ### Compile
-status "Exporting config vars to environment"
+echo "Exporting config vars to environment"
 export_env_dir
 
 mkdir -p $SALESFORCE_DIR
@@ -66,25 +66,8 @@ if [[ ! -v HEROKU_APP_NAME ]]; then
    export HEROKU_APP_NAME="App Name Unknown"
 fi
 
-status "Generating release phase deploy script to $SALESFORCE_DIR_NAME/deploy"
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
-# write script triggering node-based deployment to-be-invoked bin/release
-cat <<EOF >$SALESFORCE_DIR/deploy
-export SALESFORCE_WORKSPACE="$SALESFORCE_WORKSPACE"
-export SALESFORCE_BYOO="$SALESFORCE_BYOO"
-export SALESFORCE_BUILDPACK_VERBOSE="$SALESFORCE_BUILDPACK_VERBOSE"
-# relative dir as BUILD_DIR not same in release phase
-export SALESFORCE_DIR="$SALESFORCE_DIR_NAME"
-# not needed for release, but adding until release is broken out from force.js
-export HEROKU_APP_NAME="$HEROKU_APP_NAME"
-$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js release
-EOF
-
-chmod +x $SALESFORCE_DIR/deploy
-if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
-    debug "Script: `cat $SALESFORCE_DIR/deploy`"
-fi
 
 status "Installing node modules..."
 cd $SALESFORCE_DIR
@@ -103,53 +86,66 @@ fi
 status "Invoking $SALESFORCE_DIR/force.js compile phase..."
 $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 
-DEPLOY_MSG="To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
-
-VENDORED_HEROKU_CLI="vendor/heroku-cli"
-ls $BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/*
-export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
-echo "PATH=$PATH"
-#HEROKU_PATH=vendor/heroku-toolbelt/bin
-#HEROKU_CLIENT="$HEROKU_PATH/heroku"
-HEROKU_CLIENT="heroku"
-if type "$HEROKU_CLIENT" &> /dev/null; then
-    log "Found Heroku CLI at $HEROKU_CLIENT"
-    status "Installing AppCloud Plugin..."
-    # FIXME: change to salesforce-alm
-    #$HEROKU_CLIENT plugins:install salesforce-alm-dev
-    #$HEROKU_CLIENT plugins
-    #$HEROKU_CLIENT --help
-    #$HEROKU_CLIENT force --help
-    highlight "### N O T E ###"
-    highlight "$DEPLOY_MSG"
-    highlight "To TEST, configure your app to invoke AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json.  Eg:"
-    highlight "    $ heroku force:apex:test [params]"
-    highlight "To IMPORT DATA into the org, configure your app to invoke AppCloud Plugin data command (force:data:import) in your release phase script.  Eg:"
-    highlight "    $ heroku force:data:import [params]"
-    highlight "###############"
-else
-    log "Heroku CLI not found."
-    log "To use AppCloud Plugin commands in test and release phases, add 'heroku-buildpack-toolbelt' buildpack to app."
-
-    status "Generating test phase script to $SALESFORCE_DIR_NAME/test"
-    # write script to-be-invoked via test phase per app.json
-    cat <<EOF >$SALESFORCE_DIR/test
+status "Generating release phase deploy script to $SALESFORCE_DIR_NAME/deploy"
+# write script triggering node-based deployment to-be-invoked bin/release
+cat <<EOF >$SALESFORCE_DIR/deploy
 export SALESFORCE_WORKSPACE="$SALESFORCE_WORKSPACE"
 export SALESFORCE_BYOO="$SALESFORCE_BYOO"
 export SALESFORCE_BUILDPACK_VERBOSE="$SALESFORCE_BUILDPACK_VERBOSE"
-# relative dir as BUILD_DIR not same in test phase
+# relative dir as BUILD_DIR not same in release phase
 export SALESFORCE_DIR="$SALESFORCE_DIR_NAME"
+# not needed for release, but adding until release is broken out from force.js
 export HEROKU_APP_NAME="$HEROKU_APP_NAME"
-$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js test
+$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js release
 EOF
-    chmod +x $SALESFORCE_DIR/test
-    if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
-        debug "Script: `cat $SALESFORCE_DIR/test`"
-    fi
 
-    echo ""
-    highlight "$DEPLOY_MSG"
-    highlight "To run all Apex tests, configure your app to invoke '$SALESFORCE_DIR_NAME/test' via 'test' in your app.json."
+chmod +x $SALESFORCE_DIR/deploy
+if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
+    debug "Script: `cat $SALESFORCE_DIR/deploy`"
 fi
+
+highlight "Installing Heroku CLI and AppCloud Plugin"
+
+status "Fetching and vendoring Heroku CLI into slug..."
+# vendor directories
+VENDORED_HEROKU_CLI="vendor/heroku-cli"
+
+# download and extract the client tarball
+rm -rf "$BUILD_DIR/$VENDORED_HEROKU_CLI"
+mkdir -p "$BUILD_DIR/$VENDORED_HEROKU_CLI"
+cd "$BUILD_DIR/$VENDORED_HEROKU_CLI"
+
+HEROKU_CLIENT_URL="https://cli-assets.heroku.com/branches/stable/5.2.40-09fa7ac/heroku-v5.2.40-09fa7ac-linux-amd64.tar.xz"
+if [[ -z "$(which wget)" ]]; then
+  curl -s $HEROKU_CLIENT_URL | tar xJf -
+else
+  wget -qO- $HEROKU_CLIENT_URL | tar xJf -
+fi
+
+export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
+export XDG_DATA_HOME="$BUILD_DIR/.local"
+status "Installing AppCloud Plugin..."
+heroku plugins:install salesforce-alm-dev
+heroku plugins
+
+mkdir $BUILD_DIR/.profile.d
+cat <<EOF >$BUILD_DIR/.profile.d/heroku-cli.sh
+echo "Setting PATH for Heroku CLI and XDG_DATA_HOME for plugins"
+export PATH="\$PATH:\$HOME/$VENDORED_HEROKU_CLI/heroku/bin"
+export XDG_DATA_HOME="\$HOME/.local"
+echo "PATH=\$PATH"
+echo "XDG_DATA_HOME=\$XDG_DATA_HOME"
+EOF
+
+status "Heroku CLI installation done"
+
+highlight "### N O T E ###"
+highlight "To DEPLOY source to org, configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script."
+highlight "To TEST, configure your app to invoke AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json.  Eg:"
+highlight "    $ heroku force:apex:test [params]"
+highlight "To IMPORT DATA into the org, configure your app to invoke AppCloud Plugin data command (force:data:import) in your release phase script.  Eg:"
+highlight "    $ heroku force:data:import [params]"
+highlight "###############"
+
 
 highlight "DONE!  Completed in $(($SECONDS - $START_TIME))s"
