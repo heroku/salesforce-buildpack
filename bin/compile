@@ -104,7 +104,7 @@ if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
     debug "Script: `cat $SALESFORCE_DIR/deploy`"
 fi
 
-status "Installing Heroku CLI and AppCloud Plugin"
+status "Installing Heroku CLI and AppCloud and Force CLI Plugins"
 
 # vendor directories
 VENDORED_HEROKU_CLI="vendor/heroku-cli"
@@ -124,9 +124,9 @@ fi
 export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
 export XDG_DATA_HOME="$BUILD_DIR/.local"
 
-heroku plugins:install salesforce-alm-buildpack-dev
-heroku plugins:install force-cli
-heroku plugins
+#heroku plugins:install salesforce-alm-buildpack-dev
+#heroku plugins:install force-cli
+#heroku plugins
 
 mkdir $BUILD_DIR/.profile.d
 cat <<EOF >$BUILD_DIR/.profile.d/heroku-cli.sh
