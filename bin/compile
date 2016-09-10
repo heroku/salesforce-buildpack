@@ -124,9 +124,9 @@ fi
 export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
 export XDG_DATA_HOME="$BUILD_DIR/.local"
 
-#heroku plugins:install salesforce-alm-buildpack-dev
-#heroku plugins:install force-cli
-#heroku plugins
+heroku plugins:install salesforce-alm-buildpack-dev
+heroku plugins:install force-cli
+heroku plugins
 
 mkdir $BUILD_DIR/.profile.d
 cat <<EOF >$BUILD_DIR/.profile.d/heroku-cli.sh
