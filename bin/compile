@@ -92,7 +92,6 @@ cat <<EOF >$SALESFORCE_DIR/deploy
 export SALESFORCE_WORKSPACE="$SALESFORCE_WORKSPACE"
 export SALESFORCE_BYOO="$SALESFORCE_BYOO"
 export SALESFORCE_BUILDPACK_VERBOSE="$SALESFORCE_BUILDPACK_VERBOSE"
-# relative dir as BUILD_DIR not same in release phase
 export SALESFORCE_DIR="$SALESFORCE_DIR_NAME"
 # not needed for release, but adding until release is broken out from force.js
 export HEROKU_APP_NAME="$HEROKU_APP_NAME"
@@ -125,7 +124,7 @@ export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
 export XDG_DATA_HOME="$BUILD_DIR/.local"
 
 heroku plugins:install salesforce-alm-buildpack-dev
-heroku plugins:install force-cli-dev
+#heroku plugins:install force-cli-dev
 heroku plugins
 
 mkdir $BUILD_DIR/.profile.d
