@@ -128,7 +128,7 @@ heroku plugins:install force-cli-dev
 
 status "Heroku CLI and AppCloud and Force CLI Plugins installation complete"
 
-mkdir $BUILD_DIR/.profile.d
+mkdir -p $BUILD_DIR/.profile.d
 cat <<EOF >$BUILD_DIR/.profile.d/salesforce-env.sh
 echo "Setting PATH for Heroku CLI and XDG_DATA_HOME for plugins"
 export PATH="\$PATH:\$HOME/$VENDORED_HEROKU_CLI/heroku/bin"
