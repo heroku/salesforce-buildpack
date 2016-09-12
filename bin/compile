@@ -20,7 +20,6 @@ BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 SALESFORCE_DIR_NAME=".salesforce"
 SALESFORCE_DIR=$BUILD_DIR/$SALESFORCE_DIR_NAME
 SALESFORCE_CACHE_DIR=$CACHE_DIR/$SALESFORCE_DIR_NAME
-export SALESFORCE_DEPLOY_DIR="$SALESFORCE_DIR_NAME"
 
 ### Load dependencies
 source $BP_DIR/lib/common.sh
@@ -84,6 +83,7 @@ fi
 install_libsecret
 
 # delegate actual source deployment to node script
+export SALESFORCE_DEPLOY_DIR="$SALESFORCE_DIR"
 status "Invoking $SALESFORCE_DIR/force.js compile phase..."
 $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 
@@ -113,6 +113,7 @@ export XDG_DATA_HOME="$BUILD_DIR/.local"
 
 status "Heroku CLI and AppCloud and Force CLI Plugins installation complete"
 
+export SALESFORCE_DEPLOY_DIR="\$HOME/$SALESFORCE_DIR_NAME"
 mkdir -p $BUILD_DIR/.profile.d
 cat <<EOF >$BUILD_DIR/.profile.d/salesforce-env.sh
 echo "Setting PATH for Heroku CLI and XDG_DATA_HOME for plugins"
