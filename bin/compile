@@ -80,7 +80,7 @@ fi
 
 # install secret tool used by appcloud
 # FIXME: disabled for now
-#install_libsecret
+install_libsecret
 
 # delegate actual source deployment to node script
 status "Invoking $SALESFORCE_DIR/force.js compile phase..."
@@ -135,6 +135,8 @@ export PATH="\$PATH:\$HOME/$VENDORED_HEROKU_CLI/heroku/bin"
 export XDG_DATA_HOME="\$HOME/.local"
 echo "PATH=\$PATH"
 echo "XDG_DATA_HOME=\$XDG_DATA_HOME"
+
+export APPCLOUD_SECRET_TOOL_PATH="\$HOME/.apt/usr/bin/secret-tool"
 
 # setup env to support AppCloud and Force.com CLI commands
 export SALESFORCE_WORKSPACE="$SALESFORCE_WORKSPACE"
