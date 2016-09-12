@@ -40,7 +40,7 @@ elif [ -f $1/config.json ]; then
 fi
 
 ### Compile
-echo "Exporting config vars to environment"
+log "Exporting config vars to environment"
 export_env_dir
 
 mkdir -p $SALESFORCE_DIR
@@ -86,22 +86,6 @@ install_libsecret
 status "Invoking $SALESFORCE_DIR/force.js compile phase..."
 $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 
-status "Generating release phase deploy script to $SALESFORCE_DIR_NAME/deploy"
-# write script triggering node-based deployment to-be-invoked bin/release
-cat <<EOF >$SALESFORCE_DIR/deploy
-export SALESFORCE_WORKSPACE="$SALESFORCE_WORKSPACE"
-export SALESFORCE_BYOO="$SALESFORCE_BYOO"
-export SALESFORCE_BUILDPACK_VERBOSE="$SALESFORCE_BUILDPACK_VERBOSE"
-export SALESFORCE_DIR="$SALESFORCE_DIR_NAME"
-export HEROKU_APP_NAME="$HEROKU_APP_NAME"
-$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js release
-EOF
-
-chmod +x $SALESFORCE_DIR/deploy
-if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
-    debug "Script: `cat $SALESFORCE_DIR/deploy`"
-fi
-
 status "Installing Heroku CLI and AppCloud and Force CLI Plugins"
 
 # vendor directories
@@ -122,7 +106,7 @@ fi
 export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
 export XDG_DATA_HOME="$BUILD_DIR/.local"
 
-#heroku plugins:install salesforce-alm-dev
+#heroku plugins:install salesforce-alm-buildpack-dev
 #heroku plugins:install force-cli-dev
 #heroku plugins
 
@@ -135,18 +119,35 @@ export PATH="\$PATH:\$HOME/$VENDORED_HEROKU_CLI/heroku/bin"
 export XDG_DATA_HOME="\$HOME/.local"
 echo "PATH=\$PATH"
 echo "XDG_DATA_HOME=\$XDG_DATA_HOME"
-
+$(for e in $(env | grep '^SALESFORCE_\|^HEROKU_'); do
+echo "export $e"
+done)
 export APPCLOUD_SECRET_TOOL_PATH="\$HOME/.apt/usr/bin/secret-tool"
 
 # setup env to support AppCloud and Force.com CLI commands
-export SALESFORCE_WORKSPACE="$SALESFORCE_WORKSPACE"
-export SALESFORCE_BYOO="$SALESFORCE_BYOO"
-export SALESFORCE_BUILDPACK_VERBOSE="$SALESFORCE_BUILDPACK_VERBOSE"
-export SALESFORCE_DIR="$SALESFORCE_DIR_NAME"
-export HEROKU_APP_NAME="$HEROKU_APP_NAME"
 mkdir -p .local/.appcloud
 $SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js setup
+
 EOF
+
+chmod +x $BUILD_DIR/.profile.d/salesforce-env.sh
+if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
+    debug "$BUILD_DIR/.profile.d/salesforce-env.sh:"
+    debug "`cat $BUILD_DIR/.profile.d/salesforce-env.sh`"
+fi
+
+status "Generating release phase deploy script to $SALESFORCE_DIR_NAME/deploy"
+# write script triggering node-based deployment to-be-invoked bin/release
+cat <<EOF >$SALESFORCE_DIR/deploy
+$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js release
+
+EOF
+
+chmod +x $SALESFORCE_DIR/deploy
+if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
+    debug "$SALESFORCE_DIR/deploy:"
+    debug "`cat $SALESFORCE_DIR/deploy`"
+fi
 
 highlight "### N O T E ###"
 highlight "To DEPLOY source to org, to invoke '$SALESFORCE_DIR_NAME/deploy' in Procfile or in your release phase script."
