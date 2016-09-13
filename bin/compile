@@ -112,21 +112,27 @@ fi
 
 export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
 export XDG_DATA_HOME="$BUILD_DIR/.local"
+export XDG_CACHE_HOME="$BUILD_DIR/.cache"
 
-#heroku plugins:install salesforce-alm-buildpack-dev
-#heroku plugins:install force-cli-dev
-#heroku plugins
+# touch autoupdate file to prevent 'heroku update' (which breaks
+# tar as 'heroku update' alters what is being tar'd)
+mkdir -p $XDG_CACHE_HOME/heroku
+touch $XDG_CACHE_HOME/heroku/autoupdate
+heroku plugins:install salesforce-alm-buildpack-dev
+heroku plugins:install force-cli-dev
+heroku plugins
 
 status "Heroku CLI and AppCloud and Force CLI Plugins installation complete"
 
 export SALESFORCE_DEPLOY_DIR="\$HOME/$SALESFORCE_DIR_NAME"
 mkdir -p $BUILD_DIR/.profile.d
 cat <<EOF >$BUILD_DIR/.profile.d/salesforce-env.sh
-echo "Setting PATH for Heroku CLI and XDG_DATA_HOME for plugins"
-export PATH="\$PATH:\$HOME/$VENDORED_HEROKU_CLI/heroku/bin"
+echo "Exporting env vars for Heroku CLI and plugins"
+export PATH="\$PATH:\$HOME/$VENDORED_HEROKU_CLI/heroku/bin:\$HOME/$SALESFORCE_DIR/node/bin"
 export XDG_DATA_HOME="\$HOME/.local"
-echo "PATH=\$PATH"
-echo "XDG_DATA_HOME=\$XDG_DATA_HOME"
+export XDG_CACHE_HOME="\$HOME/.cache"
+
+# inherited SALESFORCE_ and HEROKU_ config vars
 $(for e in $(env | grep '^SALESFORCE_\|^HEROKU_'); do
 echo "export $e"
 done)
