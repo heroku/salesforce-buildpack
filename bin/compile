@@ -129,6 +129,7 @@ mkdir -p $BUILD_DIR/.profile.d
 cat <<EOF >$BUILD_DIR/.profile.d/salesforce-env.sh
 echo "Exporting env vars for Heroku CLI and plugins"
 export PATH="\$PATH:\$HOME/$VENDORED_HEROKU_CLI/heroku/bin:\$HOME/$SALESFORCE_DIR/node/bin"
+echo "PATH=\$PATH"
 export XDG_DATA_HOME="\$HOME/.local"
 export XDG_CACHE_HOME="\$HOME/.cache"
 
