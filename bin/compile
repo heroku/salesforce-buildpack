@@ -30,7 +30,7 @@ echo ""
 highlight "Welcome to Salesforce Buildpack!!"
 echo ""
 
-(for i in $(seq 12)
+(for i in $(seq 25)
 do
    echo Status check $i
    sleep 15
