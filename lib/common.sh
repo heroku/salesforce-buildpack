@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 get_os() {
   uname | tr A-Z a-z
 }
@@ -15,8 +17,20 @@ error() {
   exit 1
 }
 
+highlight() {
+  echo "=====> $*"
+}
+
 status() {
   echo "-----> $*"
+}
+
+log() {
+  echo "       $*"
+}
+
+debug() {
+  echo "       [DEBUG] $*"
 }
 
 # sed -l basically makes sed replace and buffer through stdin to stdout
@@ -36,8 +50,10 @@ export_env_dir() {
   if [ -d "$ENV_DIR" ]; then
     for e in $(ls $ENV_DIR); do
       echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
-      export "$e=$(cat $ENV_DIR/$e)"
+      export $e=$(cat $ENV_DIR/$e)
+      debug "$e=$(cat $ENV_DIR/$e)"
       :
     done
   fi
 }
+

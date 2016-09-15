@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # bin/compile <build-dir> <cache-dir> <env-dir>
 
+START_TIME=$SECONDS
+
 ### Configure environment
 
 set -o errexit    # always exit on error
@@ -9,11 +11,9 @@ set -o nounset    # fail on unset variables
 unset GIT_DIR     # Avoid GIT_DIR leak from previous build steps
 
 ### Configure directories
-
 BUILD_DIR=${1:-}
 CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
-
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
 ### Configure salesforce directories
@@ -22,32 +22,172 @@ SALESFORCE_DIR=$BUILD_DIR/$SALESFORCE_DIR_NAME
 SALESFORCE_CACHE_DIR=$CACHE_DIR/$SALESFORCE_DIR_NAME
 
 ### Load dependencies
-
 source $BP_DIR/lib/common.sh
 source $BP_DIR/lib/node.sh
+source $BP_DIR/lib/libs.sh
+
+echo ""
+highlight "Welcome to Salesforce Buildpack!!"
+echo ""
+
+# present of files below determine how we handle deployment
+if [ -f $1/salesforce/src/package.xml ]; then
+    log "Found Force.com Metadata API project"
+    export SALESFORCE_WORKSPACE=false
+elif [ -f $1/config.json ]; then
+    log "Found Force.com workspace project"
+    export SALESFORCE_WORKSPACE=true
+fi
 
 ### Compile
-
-status "Exporting config vars to environment"
+log "Exporting config vars to environment"
 export_env_dir
 
 mkdir -p $SALESFORCE_DIR
+export SALESFORCE_DIR=$SALESFORCE_DIR
 
+# REVIEWME: probably can remove if we use nodejs buildpack
 install_nodejs $SALESFORCE_CACHE_DIR
 # Put node in build dir since the cache is not available at time of deploy
 cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
 export PATH="$SALESFORCE_DIR/node/bin":$PATH
 
-status "Copying deploy script to .salesforce/deploy"
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
 
-echo ".salesforce/node/bin/node .salesforce/deploy.js" > $SALESFORCE_DIR/deploy
-chmod +x $SALESFORCE_DIR/deploy
-
-status "Installing modules"
+status "Installing node modules..."
 cd $SALESFORCE_DIR
-npm install | indent
+npm install --prefix $SALESFORCE_DIR | indent
 
-echo ""
-echo "Configure your application to invoke '$SALESFORCE_DIR_NAME/deploy' in your release phase script or Procfile"
+# set defaults for optional config vars
+if [[ ! -v SALESFORCE_BYOO ]]; then
+   export SALESFORCE_BYOO="false"
+fi
+
+if [[ ! -v SALESFORCE_BUILDPACK_VERBOSE ]]; then
+   export SALESFORCE_BUILDPACK_VERBOSE="false"
+fi
+
+# FIXME: workaround for HEROKU_APP_NAME not provided by staging app
+if [[ ! -v HEROKU_APP_NAME ]]; then
+   export HEROKU_APP_NAME="App Name Unknown"
+fi
+
+# double-check that node is installed
+if [ ! -f $SALESFORCE_DIR/node/bin/node ]; then
+    error "! Node not found at $SALESFORCE_DIR/node/bin/node"
+fi
+
+# install secret tool used by appcloud
+# FIXME: disabled until we enable encryption on toolbelt
+#install_libsecret
+
+# delegate actual source deployment to node script
+: ${SALESFORCE_BYPASS_COMPILE:="false"}
+export SALESFORCE_DEPLOY_DIR="$SALESFORCE_DIR"
+if [ "$SALESFORCE_BYPASS_COMPILE" == "false" ]; then
+    status "Invoking $SALESFORCE_DIR/force.js compile phase..."
+    $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
+else
+    # bypass when the add-on created org is not used, eg Review app aren't used by Test Runner
+    status "Bypassing compile phase."
+fi
+
+status "Installing Heroku CLI and AppCloud and Force CLI Plugins"
+
+# vendor directories
+VENDORED_HEROKU_CLI="vendor/heroku-cli"
+
+# download and extract the client tarball
+rm -rf "$BUILD_DIR/$VENDORED_HEROKU_CLI"
+mkdir -p "$BUILD_DIR/$VENDORED_HEROKU_CLI"
+cd "$BUILD_DIR/$VENDORED_HEROKU_CLI"
+
+HEROKU_CLIENT_URL="https://cli-assets.heroku.com/branches/stable/5.2.40-09fa7ac/heroku-v5.2.40-09fa7ac-linux-amd64.tar.xz"
+if [[ -z "$(which wget)" ]]; then
+  curl -s $HEROKU_CLIENT_URL | tar xJf -
+else
+  wget -qO- $HEROKU_CLIENT_URL | tar xJf -
+fi
+
+export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
+export XDG_DATA_HOME="$BUILD_DIR/.local"
+export XDG_CACHE_HOME="$BUILD_DIR/.cache"
+
+# touch autoupdate file to prevent 'heroku update' (which breaks
+# tar as 'heroku update' alters what is being tar'd)
+mkdir -p $XDG_CACHE_HOME/heroku
+touch $XDG_CACHE_HOME/heroku/autoupdate
+# re-use node modules
+#ls $SALESFORCE_DIR/node_modules
+#mkdir -p $XDG_DATA_HOME/heroku/plugins
+#ln -s $SALESFORCE_DIR/node_modules $XDG_DATA_HOME/heroku/plugins/node_modules
+# install plugins
+heroku plugins:install salesforce-alm-buildpack-dev
+#heroku plugins:link $SALESFORCE_DIR/node_modules/salesforce-alm-buildpack-dev
+heroku plugins:install force-cli-dev
+heroku plugins
+
+status "Heroku CLI and AppCloud and Force CLI Plugins installation complete"
+
+# write env script to set various vars so release and test scripts
+# can use heroku cli and plugins
+export SALESFORCE_DEPLOY_DIR="\$HOME/$SALESFORCE_DIR_NAME"
+mkdir -p $BUILD_DIR/.profile.d
+cat <<EOF >$BUILD_DIR/.profile.d/salesforce-env.sh
+# set path so release and customer scripts and use heroku cli and node exes
+export PATH="\$PATH:\$HOME/$VENDORED_HEROKU_CLI/heroku/bin:\$HOME/$SALESFORCE_DIR_NAME/node/bin"
+# set so heroku cli can re-use plugins
+export XDG_DATA_HOME="\$HOME/.local"
+# set so heroku cli can see heroku/autoupdate to not trigger update
+export XDG_CACHE_HOME="\$HOME/.cache"
+# set so appcloud plugin can use for encryption
+export APPCLOUD_SECRET_TOOL_PATH="\$HOME/.apt/usr/bin/secret-tool"
+# set so appcloud plugin knows where deployment zip resides
+export SALESFORCE_DEPLOY_DIR="\$HOME/$SALESFORCE_DIR_NAME"
+# set node path to use shared modules
+export NODE_PATH="\$HOME/$SALESFORCE_DIR_NAME/node_modules"
+
+# log SALESFORCE_ and HEROKU_ config vars
+if [ "\$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
+    echo "[DEBUG] PATH=\$PATH"
+    for e in \$(env | grep '^SALESFORCE_\|^HEROKU_\|^APPCLOUD_\|^XDG_\|^NODE_'); do
+        echo "[DEBUG] \$e"
+    done
+fi
+
+# setup env to support appcloud and force.com plugin commands
+mkdir -p .local/.appcloud
+$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js setup
+
+EOF
+
+chmod +x $BUILD_DIR/.profile.d/salesforce-env.sh
+if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
+    debug "$BUILD_DIR/.profile.d/salesforce-env.sh:"
+    debug "`cat $BUILD_DIR/.profile.d/salesforce-env.sh`"
+fi
+
+status "Generating release phase deploy script to $SALESFORCE_DIR_NAME/deploy"
+# write script triggering node-based deployment to-be-invoked bin/release
+cat <<EOF >$SALESFORCE_DIR/deploy
+$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js release
+
+EOF
+
+chmod +x $SALESFORCE_DIR/deploy
+if [ "$SALESFORCE_BUILDPACK_VERBOSE" == "true" ]; then
+    debug "$SALESFORCE_DIR/deploy:"
+    debug "`cat $SALESFORCE_DIR/deploy`"
+fi
+
+highlight "### N O T E ###"
+highlight "To DEPLOY source to org, to invoke '$SALESFORCE_DIR_NAME/deploy' in Procfile or in your release phase script."
+highlight "To TEST, invoke AppCloud Plugin test commands (force:apex:test or force:test) in the test section of your app.json.  Eg:"
+highlight "    $ heroku force:apex:test [params]"
+highlight "To IMPORT DATA, invoke AppCloud Plugin data command (force:data:import) in your release phase script.  Eg:"
+highlight "    $ heroku force:data:import [params]"
+highlight "###############"
+
+
+highlight "DONE!  Completed in $(($SECONDS - $START_TIME))s"

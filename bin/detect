@@ -1,9 +1,20 @@
 #!/bin/sh
 
-# this pack is valid for apps with a hello.txt in the root
+##
+# Detect that Salesforce Buildpack is applicable to project.
+#
+# Project manifest (package.xml) signifies Metadata API project.
+# -- or --
+# config.json signifies workspace project.
+##
+
+# REVIEWME: project root anywhere in repo; use config var to determine root?
 if [ -f $1/salesforce/src/package.xml ]; then
-  echo "Force.com Application"
-  exit 0
+    echo "Force.com Application (Metadata API)"
+    exit 0
+elif [ -f $1/config.json ]; then
+    echo "Force.com Application (AC/DX Workspace)"
+    exit 0
 else
-  exit 1
+    exit 1
 fi

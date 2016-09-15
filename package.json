@@ -1,19 +1,25 @@
 {
   "name": "force-com-buildpack",
   "version": "1.0.0",
-  "description": "Build pack for force.com packages",
+  "description": "Buildpack for Force.com source",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/forcedotcom/force-com-buildpack.git"
+    "url": "git+https://github.com/heroku/salesforce-buildpack.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/forcedotcom/force-com-buildpack/issues"
+    "url": "https://github.com/heroku/salesforce-buildpack/issues"
   },
-  "homepage": "https://github.com/forcedotcom/force-com-buildpack#readme",
+  "homepage": "https://github.com/heroku/salesforce-buildpack#readme",
   "dependencies": {
-    "jsforce-deploy": "git+https://github.com/ntblack/jsforce-deploy.git",
-    "jsforce-connection": "git+https://github.com/ntblack/jsforce-connection.git"
+    "bluebird": "3.4.0",
+    "express": "2.5.x",
+    "salesforce-alm-buildpack-dev": "0.1.7"
+  },
+  "devDependencies": {
+    "eslint": "^3.4.0",
+    "eslint-config-airbnb": "^10.0.1",
+    "eslint-plugin-import": "^1.14.0"
   }
 }
