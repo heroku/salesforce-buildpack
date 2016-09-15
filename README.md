@@ -1,3 +1,3 @@
-# force-com-buildpack
+# salesforce-buildpack
 
-Expects to find your metadata and package.xml in salesforce/src.
+Expects to find your source and metadata in <artifactDir>.
