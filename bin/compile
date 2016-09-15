@@ -4,7 +4,8 @@
 START_TIME=$SECONDS
 
 ### Configure environment
-
+# Debug, echo every command
+#set -x
 set -o errexit    # always exit on error
 set -o pipefail   # don't ignore exit codes when piping output
 set -o nounset    # fail on unset variables
@@ -40,7 +41,7 @@ elif [ -f $1/config.json ]; then
 fi
 
 ### Compile
-log "Exporting config vars to environment"
+log "Exporting config vars to environment..."
 export_env_dir
 
 mkdir -p $SALESFORCE_DIR
@@ -86,7 +87,7 @@ fi
 : ${SALESFORCE_BYPASS_COMPILE:="false"}
 export SALESFORCE_DEPLOY_DIR="$SALESFORCE_DIR"
 if [ "$SALESFORCE_BYPASS_COMPILE" == "false" ]; then
-    status "Invoking $SALESFORCE_DIR/force.js compile phase..."
+    status "Invoking $SALESFORCE_DIR_NAME/force.js compile phase..."
     $SALESFORCE_DIR/node/bin/node $SALESFORCE_DIR/force.js compile
 else
     # bypass when the add-on created org is not used, eg Review app aren't used by Test Runner
