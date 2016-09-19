@@ -15,7 +15,7 @@
   "dependencies": {
     "bluebird": "3.4.0",
     "express": "2.5.x",
-    "salesforce-alm-buildpack-dev": "0.1.7"
+    "salesforce-alm-buildpack-dev": "0.1.8"
   },
   "devDependencies": {
     "eslint": "^3.4.0",
