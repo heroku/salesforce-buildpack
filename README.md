@@ -14,6 +14,7 @@ heroku buildpacks:add https://github.com/heroku/salesforce-buildpack --app my-ap
 
 ## Requirements
 This buildpack requires:
+
 1. The Heroku Salesforce Addon -- provide link to docs here --
 
    Reference the addon in your [app.json](https://devcenter.heroku.com/articles/app-json-schema) or via command line e.g.,
@@ -78,7 +79,10 @@ source deployment.  The release script is defined as a process in the [Procfile]
 3. Run the following commands to add buildpacks and addons:
 
   `heroku buildpacks:add https://github.com/heroku/salesforce-buildpack --app my-app-staging`
+
   `heroku addons:create salesforce:byoo --app my-app-staging`
+
   `heroku buildpacks:add https://github.com/heroku/salesforce-buildpack --app my-app`
+
   `heroku addons:create salesforce:byoo --app my-app`
 4. From Heroku Pipelines, open up the SEM-H and assign the staging and production environments.
