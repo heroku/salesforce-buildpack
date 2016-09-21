@@ -42,16 +42,16 @@ Alternatively, it can simply run tests and rely on setup in (e.g.) the [release 
 
 To have the test runner perform setup and cleanup tasks requires the SALESFORCE_HUB_URL config var to be defined in the
 pipeline config.  Test runner uses this variable and the Salesforce buildpack generated `~/.appcloud/hubOrg.json` to
-create scratch orgs.  Within the scripts section of app.json or app-ci.json define a test script that would execute
+create scratch orgs.  Within the scripts section of `app.json` or `app-ci.json` define a test script that would execute
 the test runner command from the Salesforce DX CLI, e.g.,
 ```
 heroku force:test -c test/test-runner-config.json -r tap
 ```
 The `test-runner-config.json` defines the setup and tear down tasks as well as the tests to be executed as part of that
-test profile.  See the [test runner schema](https://git.soma.salesforce.com/ALMSourceDrivenDev/force-com-toolbelt/blob/developer/schemas/testRunnerConfigSchema.json) for more details.
+test profile.
 
 To have the test runner simply run tests requires the Salesforce addon to be provisioned and all setup tasks to be performed before the
-tests execute.  One way to accomplish this is by defining a test-setup script within app.json or app-ci.json which handles
+tests execute.  One way to accomplish this is by defining a `test-setup` script within `app.json` or `app-ci.json` which handles
 pushing source, creating permsets, and importing data.  The test script would then just execute tests with a command
 such as,
 ```
