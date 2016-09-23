@@ -24,10 +24,22 @@ This buildpack requires:
    The Salesforce addon will set the SALESFORCE_URL config var which is required by the buildpack.  You can use the
    Salesforce Environment Manager on Heroku or [SEM-H](https://gist.github.com/simpsoka/c584c65d655268eaf26ec487bf6b8295)
    to view all your Salesforce orgs that have been attached to Heroku apps.
+   
+   Salesforce add-on is Alpha.  Contact Heroku to request access. 
+   
 2. A [config.json] -- provide link to schema -- file in the root directory.
 
    This file points to the [force.com](https://www.salesforce.com/products/platform/products/force/) source directory
    of your project via the defaultArtifact property name.
+   
+   Example:
+   ```
+   {
+      "sfdcLoginUrl": "https://login.salesforce.com",
+      "apiVersion": "38.0",
+      "defaultArtifact": "force-app"
+   }
+   ```
 
 ## Pipelines
 To achieve a Continuous Integration and Continuous Delivery flow you can create a [Heroku Pipeline](https://devcenter.heroku.com/articles/pipelines) and attach your Salesforce provisioned Heroku apps.  See example below.
