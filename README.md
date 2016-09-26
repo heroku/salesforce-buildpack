@@ -25,7 +25,7 @@ This buildpack requires:
    Salesforce Environment Manager on Heroku or [SEM-H](https://gist.github.com/simpsoka/c584c65d655268eaf26ec487bf6b8295)
    to view all your Salesforce orgs that have been attached to Heroku apps.
    
-   Salesforce add-on is Alpha.  Contact Heroku to request access. 
+   The Salesforce add-on is in alpha status.  Please contact Heroku to request access. 
    
 2. A [config.json] -- provide link to schema -- file in the root directory.
 
@@ -42,7 +42,7 @@ This buildpack requires:
    ```
 
 ## Pipelines
-To achieve a Continuous Integration and Continuous Delivery flow you can create a [Heroku Pipeline](https://devcenter.heroku.com/articles/pipelines) and attach your Salesforce provisioned Heroku apps.  See example below.
+To achieve a Continuous Integration and Continuous Delivery flow, you can create a [Heroku Pipeline](https://devcenter.heroku.com/articles/pipelines) and attach your Salesforce provisioned Heroku apps.  See example below.
 
 ## Config Vars
 **SALESFORCE_URL**: Salesforce Add-on applied that defines connectivity to an org.
@@ -51,29 +51,28 @@ To achieve a Continuous Integration and Continuous Delivery flow you can create 
 
 **SALESFORCE_BYOO**: Manually applied (Salesforce Add-on may do soon) boolean: `true` states that `SALESFORCE_URL` points to a a Salesforce Sandbox or Production org, `false` if Scratch org.
 
-## Testing via Heroku CI
-The buildpack allows testing your code changes via [Heroku CI](https://devcenter.heroku.com/articles/heroku-ci-prerelease).
-This can be accomplished in a few different ways.  The Salesforce DX test runner can be configured to do all setup and
-clean up tasks such as create a scratch org, push source, create permsets, import data, run tests, then delete the org.
-Alternatively, it can simply run tests and rely on setup in (e.g.) the [release phase](https://devcenter.heroku.com/articles/release-phase).
+##Using the buildpack with test runner
+Running tests means setting up and managing the testing environment. The Salesforce DX test runner can be configured to do all setup and cleanup tasks. A sample set of tasks could be: create a scratch org; push source to the org; create permsets; import data; run tests; delete the org.
+Alternatively, the test runner can simply run tests and leverage setup done during (e.g.) the [release phase](https://devcenter.heroku.com/articles/release-phase).
 
-To have the test runner perform setup and cleanup tasks requires the SALESFORCE_HUB_URL config var to be defined in the
-pipeline config.  Test runner uses this variable and the Salesforce buildpack generated `~/.appcloud/hubOrg.json` to
-create scratch orgs.  Within the scripts section of `app.json` or `app-ci.json` define a test script that would execute
-the test runner command from the Salesforce DX CLI, e.g.,
+In order to have the test runner perform setup and cleanup tasks, the SALESFORCE_HUB_URL config var must be defined in the pipeline config.  Test runner uses this variable, along with the Salesforce buildpack-generated `~/.appcloud/hubOrg.json` file, to create scratch orgs.  Within the scripts section of `app.json` or `app-ci.json`, define a test script that will execute the test runner command from the Salesforce DX CLI. For example:
 ```
 heroku force:test -c test/test-runner-config.json -r tap
 ```
-The `test-runner-config.json` defines the setup and tear down tasks as well as the tests to be executed as part of that
+The `test-runner-config.json` defines the setup and tear-down tasks as well as the tests to be executed as part of that
 test profile.
 
-To have the test runner simply run tests requires the Salesforce addon to be provisioned and all setup tasks to be performed before the
-tests execute.  One way to accomplish this is by defining a `test-setup` script within `app.json` or `app-ci.json` which handles
-pushing source, creating permsets, and importing data.  The test script would then just execute tests with a command
+To have the test runner simply run tests, the Salesforce addon must be provisioned and all setup tasks must be performed before the
+tests execute.  This is accomplished by defining a `test-setup` script within `app.json` or `app-ci.json`. This script must handle
+pushing source, creating permsets, and importing data.  The test runner would then just execute tests with a command
 such as,
 ```
 heroku force:apex:test -r tap
 ```
+
+
+## Testing via Heroku CI
+The buildpack allows testing your code changes via [Heroku CI](https://devcenter.heroku.com/articles/heroku-ci-prerelease). 
 
 ## Force.com Source Deployment via Release Phase
 After the Salesforce buildpack completes there are setup tasks that need to be completed prior to running tests.  These
