@@ -49,7 +49,7 @@ To achieve a Continuous Integration and Continuous Delivery flow you can create 
 
 **SALESFORCE_HUB_URL**: Salesforce Add-on or manually applied that enables the Salesforce Add-on and Test Runner to create orgs.
 
-**SALESFORCE_BYOO**: Salesforce Add-on applied stating that org associated with this app is a Salesforce Sandbox or Production org, i.e. not a Scratch org.
+**SALESFORCE_BYOO**: Manually applied (Salesforce Add-on may do soon) boolean: `true` states that `SALESFORCE_URL` points to a a Salesforce Sandbox or Production org, `false` if Scratch org.
 
 ## Testing via Heroku CI
 The buildpack allows testing your code changes via [Heroku CI](https://devcenter.heroku.com/articles/heroku-ci-prerelease).
