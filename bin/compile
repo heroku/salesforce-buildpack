@@ -54,6 +54,7 @@ cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
 export PATH="$SALESFORCE_DIR/node/bin":$PATH
 echo $PATH
 ls -l $SALESFORCE_DIR
+ln -s -f $SALESFORCE_DIR/node/lib/node_modules/npm/bin/npm-cli.js $SALESFORCE_DIR/node/bin/npm
 ls -l $SALESFORCE_DIR/node/bin
 
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
