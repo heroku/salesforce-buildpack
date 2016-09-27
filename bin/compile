@@ -52,8 +52,8 @@ install_nodejs $SALESFORCE_CACHE_DIR
 # Put node in build dir since the cache is not available at time of deploy
 cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
 export PATH="$SALESFORCE_DIR/node/bin":$PATH
-echo $PATH
-ls -l $SALESFORCE_DIR
+
+### Hardcode the npm sym link to get around a Heroku CI cache bug. This should be removed when fixed.
 ln -s -f $SALESFORCE_DIR/node/lib/node_modules/npm/bin/npm-cli.js $SALESFORCE_DIR/node/bin/npm
 ls -l $SALESFORCE_DIR/node/bin
 
