@@ -52,6 +52,9 @@ install_nodejs $SALESFORCE_CACHE_DIR
 # Put node in build dir since the cache is not available at time of deploy
 cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
 export PATH="$SALESFORCE_DIR/node/bin":$PATH
+echo $PATH
+ls -l $SALESFORCE_DIR
+ls -l $SALESFORCE_DIR/node/bin
 
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
