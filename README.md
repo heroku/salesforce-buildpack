@@ -47,7 +47,7 @@ To achieve a Continuous Integration and Continuous Delivery flow, you can create
 ## Config Vars
 **SALESFORCE_URL**: Salesforce Add-on applied that defines connectivity to an org.
 
-**SALESFORCE_HUB_URL**: Salesforce Add-on or manually applied that enables the Salesforce Add-on and Test Runner to create orgs.
+**SALESFORCE_HUB_URL**: Salesforce Add-on or manually applied that enables the Salesforce Add-on and Test Runner to create orgs.  To enable creating orgs fro Review apps, include `SALESFORCE_HUB_URL` in your `app.json` and set `required: true`. 
 
 **SALESFORCE_BYOO**: Manually applied (Salesforce Add-on may do soon) boolean: `true` states that `SALESFORCE_URL` points to a a Salesforce Sandbox or Production org, `false` if Scratch org.
 
