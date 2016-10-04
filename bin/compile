@@ -53,6 +53,10 @@ install_nodejs $SALESFORCE_CACHE_DIR
 cp -a $SALESFORCE_CACHE_DIR/node $SALESFORCE_DIR/node
 export PATH="$SALESFORCE_DIR/node/bin":$PATH
 
+### Hardcode the npm sym link to get around a Heroku CI cache bug. This should be removed when fixed.
+ln -s -f $SALESFORCE_DIR/node/lib/node_modules/npm/bin/npm-cli.js $SALESFORCE_DIR/node/bin/npm
+ls -l $SALESFORCE_DIR/node/bin
+
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $SALESFORCE_DIR/package.json
 
