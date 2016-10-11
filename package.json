@@ -1,5 +1,5 @@
 {
-  "name": "force-com-buildpack",
+  "name": "salesforce-buildpack",
   "version": "1.0.0",
   "description": "Buildpack for Force.com source",
   "repository": {
@@ -14,8 +14,7 @@
   "homepage": "https://github.com/heroku/salesforce-buildpack#readme",
   "dependencies": {
     "bluebird": "3.4.0",
-    "express": "2.5.x",
-    "salesforce-alm-buildpack-dev": "0.2.3"
+    "salesforce-alm-buildpack-dev": "latest"
   },
   "devDependencies": {
     "eslint": "^3.4.0",
