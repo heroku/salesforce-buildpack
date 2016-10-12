@@ -19,7 +19,7 @@ This buildpack requires:
 
    Reference the addon in your [app.json](https://devcenter.heroku.com/articles/app-json-schema) or via command line e.g.,
    ```
-   heroku addons:create salesforce
+   heroku addons:create salesforce:standard
    ```
    The Salesforce addon will set the SALESFORCE_URL config var which is required by the buildpack.  You can use the
    Salesforce Environment Manager on Heroku or [SEM-H](https://gist.github.com/simpsoka/c584c65d655268eaf26ec487bf6b8295)
@@ -91,9 +91,9 @@ source deployment.  The release script is defined as a process in the [Procfile]
 
   `heroku buildpacks:add https://github.com/heroku/salesforce-buildpack --app my-app-staging`
 
-  `heroku addons:create salesforce:byoo --app my-app-staging`
+  `heroku addons:create salesforce:standard --app my-app-staging`
 
   `heroku buildpacks:add https://github.com/heroku/salesforce-buildpack --app my-app`
 
-  `heroku addons:create salesforce:byoo --app my-app`
+  `heroku addons:create salesforce:standard --app my-app`
 4. From Heroku Pipelines, open up the SEM-H and assign the staging and production environments.
