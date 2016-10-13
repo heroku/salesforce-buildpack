@@ -1,20 +1,13 @@
 #!/bin/sh
 
 ##
-# Detect that Salesforce Buildpack is applicable to project.
-#
-# Project manifest (package.xml) signifies Metadata API project.
-# -- or --
-# config.json signifies workspace project.
+# Detect that Salesforce Buildpack is applicable to Force.com project.
 ##
 
-# REVIEWME: project root anywhere in repo; use config var to determine root?
-if [ -f $1/salesforce/src/package.xml ]; then
-    echo "Force.com Application (Metadata API)"
-    exit 0
-elif [ -f $1/config.json ]; then
-    echo "Force.com Application (AC/DX Workspace)"
+if [ -f $1/workspace-config.json ]; then
+    echo "Force.com (Salesforce DX Workspace)"
     exit 0
 else
+    echo "Did NOT find 'workspace-config.json' in Force.com project"
     exit 1
 fi

@@ -1,24 +1,25 @@
 {
-  "name": "salesforce-buildpack",
-  "version": "1.0.0",
-  "description": "Buildpack for Force.com source",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/heroku/salesforce-buildpack.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/heroku/salesforce-buildpack/issues"
-  },
-  "homepage": "https://github.com/heroku/salesforce-buildpack#readme",
-  "dependencies": {
-    "bluebird": "3.4.0",
-    "salesforce-alm-buildpack-dev": "latest"
-  },
-  "devDependencies": {
-    "eslint": "^3.4.0",
-    "eslint-config-airbnb": "^10.0.1",
-    "eslint-plugin-import": "^1.14.0"
-  }
+    "name": "salesforce-buildpack",
+    "version": "1.0.0",
+    "description": "Buildpack for Salsforce DX Force.com source",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/heroku/salesforce-buildpack.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/heroku/salesforce-buildpack/issues"
+    },
+    "homepage": "https://github.com/heroku/salesforce-buildpack#readme",
+    "dependencies": {
+        "bluebird": "3.4.0",
+        "express": "4.13.4",
+        "salesforce-alm-buildpack-dev": "latest"
+    },
+    "devDependencies": {
+        "eslint": "^3.4.0",
+        "eslint-config-airbnb": "^10.0.1",
+        "eslint-plugin-import": "^1.14.0"
+    }
 }
