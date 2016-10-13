@@ -45,7 +45,7 @@ export SALESFORCE_DIR=$SALESFORCE_DIR
 
 
 ###   H E R O K U   C L I
-status "Installing Heroku CLI and Salesforce plugins"
+status "Installing Heroku CLI and SFDX plugins"
 
 # vendor directories
 VENDORED_HEROKU_CLI="vendor/heroku-cli"
@@ -87,7 +87,7 @@ heroku plugins:install salesforce-alm-buildpack-dev@$SALESFORCE_APPCLOUD_TOOLBET
 heroku plugins:install force-cli-dev@$SALESFORCE_FORCE_COM_CLI_DIST_TAG
 heroku plugins
 
-status "Heroku CLI and Salesforce plugins installation complete"
+status "Heroku CLI and SFDX plugins installation complete"
 
 
 ###   N O D E
@@ -163,16 +163,37 @@ if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
 fi
 
 
+###   P R O C F I L E
+# if no Procfile, write Procfile having default behavior: deploy in release phase, redirect to SALESFORCE_URL in web phase
+if [ ! -f $BUILD_DIR/Procfile ]; then
+    cat <<EOF >$BUILD_DIR/Procfile
+# Deploy source to SALESFORCE_URL org.
+release: .salesforce/node/bin/node .salesforce/force.js release
+
+# Redirect all Heroku app domain requests to SALESFORCE_URL org.
+# Defaults to /one/one.app, configurable via SALESFORCE_START_URL config var.
+web: .salesforce/node/bin/node .salesforce/force.js redirect
+
+EOF
+    status "Generated Procfile that will deploy source in release phase and redirect to SALESFORCE_URL in web phase"
+    if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
+        debug "$BUILD_DIR/Procfile:"
+        debug "`cat $BUILD_DIR/Procfile`"
+    fi
+fi
+
+
 ###   F I N A L   N O T E S
 highlight "    "
 highlight "### N O T E ###"
-highlight "Heroku CLI and Salesforce plugins were installed for use in release and test phase scripts."
+highlight "Heroku CLI and SFDX plugins were installed for use in release and test phase scripts."
+highlight "To use SFDX CLI commands, ensure that '.profile.d/salesforce-env.sh' is sourced to setup shell environment."
 highlight "    "
-highlight "To DEPLOY source to org, to invoke 'node $SALESFORCE_DIR_NAME/deploy' in Procfile or in your release phase script."
-highlight "To TEST, invoke Salesforce CLI test commands (force:apex:test or force:test) in the test section of your app.json.  Eg:"
-highlight "    $ heroku force:apex:test [params]"
+highlight "To DEPLOY source to your app's Organization (SALESFORCE_URL), invoke 'node $SALESFORCE_DIR_NAME/deploy' in your app's Procfile or release phase script."
 highlight "    "
-highlight "To use Salesforce CLI commands, source in '.profile.d/salesforce-env.sh' to ensure environment is properly setup."
+highlight "To TEST, invoke SFDX CLI test commands (force:apex:test or force:test) in the test section of app.json.  Eg:"
+highlight "    heroku force:apex:test [params]"
+highlight "    "
 highlight "###############"
 highlight "    "
 
