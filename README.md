@@ -47,9 +47,7 @@ To achieve a Continuous Integration and Continuous Delivery flow, you can create
 ## Config Vars
 **SALESFORCE_URL**: Salesforce Add-on applied that defines connectivity to an org.
 
-**SALESFORCE_HUB_URL**: Salesforce Add-on or manually applied that enables the Salesforce Add-on and Test Runner to create orgs.  To enable creating orgs fro Review apps, include `SALESFORCE_HUB_URL` in your `app.json` and set `required: true`. 
-
-**SALESFORCE_BYOO**: Manually applied (Salesforce Add-on may do soon) boolean: `true` states that `SALESFORCE_URL` points to a a Salesforce Sandbox or Production org, `false` if Scratch org.
+**SALESFORCE_HUB_URL**: Salesforce Add-on or manually applied that enables the Salesforce Add-on and Test Runner to create orgs.  To enable creating orgs fro Review apps, include `SALESFORCE_HUB_URL` in your `app.json` and set `required: true`.
 
 ##Using the buildpack with test runner
 Running tests means setting up and managing the testing environment. The Salesforce DX test runner can be configured to do all setup and cleanup tasks. A sample set of tasks could be: create a scratch org; push source to the org; create permsets; import data; run tests; delete the org.
