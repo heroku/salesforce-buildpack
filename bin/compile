@@ -148,21 +148,6 @@ if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
 fi
 
 
-###   R E L E A S E   S C R I P T
-# write script triggering node-based deployment to-be-invoked bin/release
-cat <<EOF >$SALESFORCE_DIR/deploy
-$SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js release
-
-EOF
-status "Generated '$SALESFORCE_DIR_NAME/deploy' node script to be called in release phase to deploy source to target org (SALESFORCE_URL)"
-
-chmod +x $SALESFORCE_DIR/deploy
-if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
-    debug "$SALESFORCE_DIR/deploy:"
-    debug "`cat $SALESFORCE_DIR/deploy`"
-fi
-
-
 ###   P R O C F I L E
 # if no Procfile, write Procfile having default behavior: deploy in release phase, redirect to SALESFORCE_URL in web phase
 if [ ! -f $BUILD_DIR/Procfile ]; then
@@ -189,7 +174,7 @@ highlight "### N O T E ###"
 highlight "Heroku CLI and SFDX plugins were installed for use in release and test phase scripts."
 highlight "To use SFDX CLI commands, ensure that '.profile.d/salesforce-env.sh' is sourced to setup shell environment."
 highlight "    "
-highlight "To DEPLOY source to your app's Organization (SALESFORCE_URL), invoke 'node $SALESFORCE_DIR_NAME/deploy' in your app's Procfile or release phase script."
+highlight "To DEPLOY source to your app's Organization (SALESFORCE_URL), invoke 'node $SALESFORCE_DIR_NAME/force.js release' in your app's Procfile or release phase script."
 highlight "    "
 highlight "To TEST, invoke SFDX CLI test commands (force:apex:test or force:test) in the test section of app.json.  Eg:"
 highlight "    heroku force:apex:test [params]"
