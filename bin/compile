@@ -83,6 +83,8 @@ if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
     debug "SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG=$SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG"
 fi
 
+export HEROKU_DEBUG=1
+export GODE_DEBUG=silly
 heroku plugins:install salesforce-alm@$SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG
 heroku plugins:install force-cli-dev@$SALESFORCE_FORCE_COM_CLI_DIST_TAG
 heroku plugins
