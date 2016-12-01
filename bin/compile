@@ -77,14 +77,14 @@ touch $XDG_CACHE_HOME/heroku/autoupdate
 
 # install plugins
 : ${SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG:="preview"}
-: ${SALESFORCE_FORCE_COM_CLI_DIST_TAG:="latest"}
+: ${SALESFORCE_FORCE_COM_CLI_DIST_TAG:="preview"}
 
 if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
     debug "SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG=$SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG"
 fi
 
 heroku plugins:install salesforce-alm@$SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG
-heroku plugins:install force-cli-dev@$SALESFORCE_FORCE_COM_CLI_DIST_TAG
+heroku plugins:install force-cli@$SALESFORCE_FORCE_COM_CLI_DIST_TAG
 heroku plugins
 
 status "Heroku CLI and SFDX plugins installation complete"
