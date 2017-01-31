@@ -105,7 +105,7 @@ status "Installing node modules..."
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $XDG_DATA_HOME/heroku/plugins/package.json
 cd $XDG_DATA_HOME/heroku/plugins
-npm install --only=production | indent
+npm install --loglevel verbose --only=production | indent
 
 # double-check that node is installed
 if [ ! -f $SALESFORCE_DIR/node/bin/node ]; then
