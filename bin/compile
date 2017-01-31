@@ -84,7 +84,8 @@ if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
 fi
 
 heroku plugins:install salesforce-alm@$SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG
-heroku plugins:install force-cli@$SALESFORCE_FORCE_COM_CLI_DIST_TAG
+# FIXME: change once latest is published
+heroku plugins:install force-cli@prerelease
 heroku plugins
 
 status "Heroku CLI and SFDX plugins installation complete"
