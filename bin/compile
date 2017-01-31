@@ -137,7 +137,7 @@ if [ "\$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
 fi
 
 # setup env to support appcloud and force.com plugin commands
-mkdir -p .local/.appcloud
+mkdir -p .local/.sfdx
 $SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js setup
 
 EOF
