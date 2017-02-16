@@ -55,15 +55,19 @@ rm -rf "$BUILD_DIR/$VENDORED_HEROKU_CLI"
 mkdir -p "$BUILD_DIR/$VENDORED_HEROKU_CLI"
 cd "$BUILD_DIR/$VENDORED_HEROKU_CLI"
 
-: ${HEROKU_CLI_VERSION:="5.4.3-a5b1cb1"}
-HEROKU_CLI_URL="https://cli-assets.heroku.com/branches/stable/$HEROKU_CLI_VERSION/heroku-v$HEROKU_CLI_VERSION-linux-amd64.tar.xz"
+#: ${HEROKU_CLI_VERSION:="5.4.3-a5b1cb1"}
+: ${HEROKU_CLI_VERSION:="5.6.18-c980278"}
+#HEROKU_CLI_URL="https://cli-assets.heroku.com/branches/stable/$HEROKU_CLI_VERSION/heroku-v$HEROKU_CLI_VERSION-linux-amd64.tar.xz"
+HEROKU_CLI_URL=https://cli-assets.heroku.com/branches/sfdx/5.6.18-c980278/heroku-v$HEROKU_CLI_VERSION-linux-amd64.tar.gz
 if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
     debug "HEROKU_CLI_URL=$HEROKU_CLI_URL"
 fi
 if [[ -z "$(which wget)" ]]; then
-  curl -s $HEROKU_CLI_URL | tar xJf -
+  #curl -s $HEROKU_CLI_URL | tar xJf -
+  curl -s $HEROKU_CLI_URL | tar xzf -
 else
-  wget -qO- $HEROKU_CLI_URL | tar xJf -
+  #wget -qO- $HEROKU_CLI_URL | tar xJf -
+  wget -qO- $HEROKU_CLI_URL | tar xzf -
 fi
 
 export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
@@ -77,16 +81,14 @@ touch $XDG_CACHE_HOME/heroku/autoupdate
 
 # install plugins
 # FIXME: change once latest is published
-: ${SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG:="prerelease"}
-: ${SALESFORCE_FORCE_COM_CLI_DIST_TAG:="prerelease"}
+: ${SALESFORCE_BUILDPACK_SALESFORCEDX_DIST_TAG:="prerelease"}
 
 if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
-    debug "SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG=$SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG"
+    debug "SALESFORCE_BUILDPACK_SALESFORCEDX_DIST_TAG=$SALESFORCE_BUILDPACK_SALESFORCEDX_DIST_TAG"
 fi
 
-heroku plugins:install salesforce-alm@$SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG
-heroku plugins:install force-cli@$SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG
-heroku plugins
+sfdx plugins:install salesforcedx@$SALESFORCE_BUILDPACK_SALESFORCEDX_DIST_TAG
+sfdx plugins
 
 status "Heroku CLI and SFDX plugins installation complete"
 
@@ -105,7 +107,9 @@ status "Installing node modules..."
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $XDG_DATA_HOME/heroku/plugins/package.json
 cd $XDG_DATA_HOME/heroku/plugins
-npm install --loglevel verbose --only=production | indent
+# info, verbose, silly
+: ${SALESFORCE_BUILDPACK_NPM_INSTALL_LOG_LEVEL:="verbose"}
+npm install --loglevel $SALESFORCE_BUILDPACK_NPM_INSTALL_LOG_LEVEL --only=production | indent
 
 # double-check that node is installed
 if [ ! -f $SALESFORCE_DIR/node/bin/node ]; then
@@ -131,12 +135,12 @@ export NODE_PATH="\$XDG_DATA_HOME/heroku/plugins/node_modules"
 # log SALESFORCE_ and HEROKU_ config vars
 if [ "\$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
     echo "[DEBUG] PATH=\$PATH"
-    for e in \$(env | grep '^SALESFORCE_\|^HEROKU_\|^APPCLOUD_\|^XDG_\|^NODE_'); do
+    for e in \$(env | grep '^SALESFORCE_\|^HEROKU_\|^SFDX_\|^XDG_\|^NODE_'); do
         echo "[DEBUG] \$e"
     done
 fi
 
-# setup env to support appcloud and force.com plugin commands
+# setup env to support sfdx plugin commands
 mkdir -p .local/.sfdx
 $SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js setup
 
@@ -172,13 +176,13 @@ fi
 ###   F I N A L   N O T E S
 highlight "    "
 highlight "### N O T E ###"
-highlight "Heroku CLI and SFDX plugins were installed for use in release and test phase scripts."
+highlight "SFDX CLI and SFDX plugins were installed for use in release and test phase scripts."
 highlight "To use SFDX CLI commands, ensure that '.profile.d/salesforce-env.sh' is sourced to setup shell environment."
 highlight "    "
 highlight "To DEPLOY source to your app's Organization (SALESFORCE_URL), invoke 'node $SALESFORCE_DIR_NAME/force.js release' in your app's Procfile or release phase script."
 highlight "    "
-highlight "To TEST, invoke SFDX CLI test commands (force:apex:test or force:test) in the test section of app.json.  Eg:"
-highlight "    heroku force:apex:test [params]"
+highlight "To TEST, invoke SFDX CLI test commands (force:apex:test:run or force:testrunner:run) in the test section of app.json.  Eg:"
+highlight "    sfdx force:apex:test:run [params]"
 highlight "    "
 highlight "###############"
 highlight "    "
