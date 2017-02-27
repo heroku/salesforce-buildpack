@@ -146,18 +146,18 @@ fi
 
 
 ###   P R O C F I L E
-# if no Procfile, write Procfile having default behavior: deploy in release phase, redirect to SALESFORCE_URL in web phase
+# if no Procfile, write Procfile having default behavior: deploy in release phase, redirect to SFDX_AUTH_URL in web phase
 if [ ! -f $BUILD_DIR/Procfile ]; then
     cat <<EOF >$BUILD_DIR/Procfile
-# Deploy source to SALESFORCE_URL org.
+# Deploy source to SFDX_AUTH_URL org.
 release: .salesforce/node/bin/node .salesforce/force.js release
 
-# Redirect all Heroku app domain requests to SALESFORCE_URL org.
+# Redirect all Heroku app domain requests to SFDX_AUTH_URL org.
 # Defaults to /one/one.app, configurable via SALESFORCE_START_URL config var.
 web: .salesforce/node/bin/node .salesforce/force.js redirect
 
 EOF
-    status "Generated Procfile that will deploy source in release phase and redirect to SALESFORCE_URL in web phase"
+    status "Generated Procfile that will deploy source in release phase and redirect to SFDX_AUTH_URL in web phase"
     if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
         debug "$BUILD_DIR/Procfile:"
         debug "`cat $BUILD_DIR/Procfile`"
@@ -171,7 +171,7 @@ highlight "### N O T E ###"
 highlight "SFDX CLI and SFDX plugins were installed for use in release and test phase scripts."
 highlight "To use SFDX CLI commands, ensure that '.profile.d/salesforce-env.sh' is sourced to setup shell environment."
 highlight "    "
-highlight "To DEPLOY source to your app's Organization (SALESFORCE_URL), invoke 'node $SALESFORCE_DIR_NAME/force.js release' in your app's Procfile or release phase script."
+highlight "To DEPLOY source to your app's Organization (SFDX_AUTH_URL), invoke 'node $SALESFORCE_DIR_NAME/force.js release' in your app's Procfile or release phase script."
 highlight "    "
 highlight "To TEST, invoke SFDX CLI test commands (force:apex:test:run or force:testrunner:run) in the test section of app.json.  Eg:"
 highlight "    sfdx force:apex:test:run [params]"
