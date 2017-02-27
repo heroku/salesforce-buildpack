@@ -37,9 +37,6 @@ echo ""
 
 
 ###   E X P O R T   C O N F I G   V A R S
-if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
-    debug "Exporting config vars to environment..."
-fi
 export_env_dir
 
 mkdir -p $SALESFORCE_DIR
@@ -72,8 +69,8 @@ export XDG_DATA_HOME="$BUILD_DIR/.local"
 export XDG_CACHE_HOME="$BUILD_DIR/.cache"
 
 if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
-    debug '$BUILD_DIR/$VENDORED_SFDX_CLI/heroku/bin:'
-    ls -Llsrt $BUILD_DIR/$VENDORED_SFDX_CLI/heroku/bin
+    debug $VENDORED_SFDX_CLI/heroku/bin:
+    ls -Llsrt $VENDORED_SFDX_CLI/heroku/bin
     debug 'which sfdx:'
     which sfdx
 fi
