@@ -27,70 +27,66 @@ source $BP_DIR/lib/common.sh
 source $BP_DIR/lib/node.sh
 source $BP_DIR/lib/libs.sh
 
+# set defaults for optional config vars
+: ${SALESFORCE_BUILDPACK_VERBOSE:="false"}
+: ${SALESFORCE_BUILDPACK_DEBUG:="false"}
+
 echo ""
 highlight "Welcome to Salesforce Buildpack!!"
 echo ""
 
 
 ###   E X P O R T   C O N F I G   V A R S
-log "Exporting config vars to environment..."
+if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
+    debug "Exporting config vars to environment..."
+fi
 export_env_dir
-
-# set defaults for optional config vars
-: ${SALESFORCE_BUILDPACK_VERBOSE:="false"}
-: ${SALESFORCE_BUILDPACK_DEBUG:="false"}
 
 mkdir -p $SALESFORCE_DIR
 export SALESFORCE_DIR=$SALESFORCE_DIR
 
 
-###   H E R O K U   C L I
-status "Installing Heroku CLI and SFDX plugins"
+###   S F D X   C L I
+status "Installing SFDX CLI and SFDX plugins"
 
 # vendor directories
-VENDORED_HEROKU_CLI="vendor/heroku-cli"
+VENDORED_SFDX_CLI="vendor/sfdx-cli"
 
 # download and extract the client tarball
-rm -rf "$BUILD_DIR/$VENDORED_HEROKU_CLI"
-mkdir -p "$BUILD_DIR/$VENDORED_HEROKU_CLI"
-cd "$BUILD_DIR/$VENDORED_HEROKU_CLI"
+rm -rf "$BUILD_DIR/$VENDORED_SFDX_CLI"
 
-#: ${HEROKU_CLI_VERSION:="5.4.3-a5b1cb1"}
-: ${HEROKU_CLI_VERSION:="5.6.18-c980278"}
-#HEROKU_CLI_URL="https://cli-assets.heroku.com/branches/stable/$HEROKU_CLI_VERSION/heroku-v$HEROKU_CLI_VERSION-linux-amd64.tar.xz"
-HEROKU_CLI_URL=https://cli-assets.heroku.com/branches/sfdx/5.6.18-c980278/heroku-v$HEROKU_CLI_VERSION-linux-amd64.tar.gz
+# install sfdx cli w/ all sfdx plugins
+: ${SFDX_CLI_VERSION:="DEVELOP"}
+SFDX_CLI_URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-buildpack-${SFDX_CLI_VERSION}.tar.gz
 if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
-    debug "HEROKU_CLI_URL=$HEROKU_CLI_URL"
+    debug "SFDX_CLI_URL=$SFDX_CLI_URL"
 fi
 if [[ -z "$(which wget)" ]]; then
-  #curl -s $HEROKU_CLI_URL | tar xJf -
-  curl -s $HEROKU_CLI_URL | tar xzf -
+  curl -s $SFDX_CLI_URL | tar xzf -
 else
-  #wget -qO- $HEROKU_CLI_URL | tar xJf -
-  wget -qO- $HEROKU_CLI_URL | tar xzf -
+  wget -qO- $SFDX_CLI_URL | tar xzf -
 fi
 
-export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
+export PATH="$PATH:$BUILD_DIR/$VENDORED_SFDX_CLI/heroku/bin"
 export XDG_DATA_HOME="$BUILD_DIR/.local"
 export XDG_CACHE_HOME="$BUILD_DIR/.cache"
+
+if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
+    debug '$BUILD_DIR/$VENDORED_SFDX_CLI/heroku/bin:'
+    ls -Llsrt $BUILD_DIR/$VENDORED_SFDX_CLI/heroku/bin
+    debug 'which sfdx:'
+    which sfdx
+fi
 
 # touch autoupdate file to prevent 'heroku update' (which breaks
 # tar as 'heroku update' alters what is being tar'd)
 mkdir -p $XDG_CACHE_HOME/heroku
 touch $XDG_CACHE_HOME/heroku/autoupdate
 
-# install plugins
-# FIXME: change once latest is published
-: ${SALESFORCE_BUILDPACK_SALESFORCEDX_DIST_TAG:="prerelease"}
-
-if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
-    debug "SALESFORCE_BUILDPACK_SALESFORCEDX_DIST_TAG=$SALESFORCE_BUILDPACK_SALESFORCEDX_DIST_TAG"
-fi
-
-sfdx plugins:install salesforcedx@$SALESFORCE_BUILDPACK_SALESFORCEDX_DIST_TAG
+# log installed plugins
 sfdx plugins
 
-status "Heroku CLI and SFDX plugins installation complete"
+status "SFDX CLI and SFDX plugins installation complete"
 
 
 ###   N O D E
@@ -109,7 +105,7 @@ cp $BP_DIR/package.json $XDG_DATA_HOME/heroku/plugins/package.json
 cd $XDG_DATA_HOME/heroku/plugins
 # info, verbose, silly
 : ${SALESFORCE_BUILDPACK_NPM_INSTALL_LOG_LEVEL:="verbose"}
-npm install --loglevel $SALESFORCE_BUILDPACK_NPM_INSTALL_LOG_LEVEL --only=production | indent
+#npm install --loglevel $SALESFORCE_BUILDPACK_NPM_INSTALL_LOG_LEVEL --only=production | indent
 
 # double-check that node is installed
 if [ ! -f $SALESFORCE_DIR/node/bin/node ]; then
@@ -124,7 +120,7 @@ export SALESFORCE_DEPLOY_DIR="\$HOME/$SALESFORCE_DIR_NAME"
 mkdir -p $BUILD_DIR/.profile.d
 cat <<EOF >$BUILD_DIR/.profile.d/salesforce-env.sh
 # set path so release and customer scripts and use heroku cli and node exes
-export PATH="\$PATH:\$HOME/$VENDORED_HEROKU_CLI/heroku/bin:\$HOME/$SALESFORCE_DIR_NAME/node/bin"
+export PATH="\$PATH:\$HOME/$VENDORED_SFDX_CLI/heroku/bin:\$HOME/$SALESFORCE_DIR_NAME/node/bin"
 # set so heroku cli can re-use plugins
 export XDG_DATA_HOME="\$HOME/.local"
 # set so heroku cli can see heroku/autoupdate to not trigger update
