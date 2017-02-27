@@ -54,7 +54,7 @@ rm -rf "$BUILD_DIR/$VENDORED_SFDX_CLI"
 
 # install sfdx cli w/ all sfdx plugins
 cd "$BUILD_DIR"
-: ${SFDX_CLI_VERSION:="DEVELOP"}
+: ${SFDX_CLI_VERSION:="LATEST"}
 SFDX_CLI_URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-buildpack-${SFDX_CLI_VERSION}.tar.gz
 if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
     debug "SFDX_CLI_URL=$SFDX_CLI_URL"
