@@ -71,8 +71,6 @@ export XDG_CACHE_HOME="$BUILD_DIR/.cache"
 if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
     debug $VENDORED_SFDX_CLI/heroku/bin:
     ls -Llsrt $VENDORED_SFDX_CLI/heroku/bin
-    debug 'which sfdx:'
-    which sfdx
 fi
 
 # touch autoupdate file to prevent 'heroku update' (which breaks
