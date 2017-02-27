@@ -124,6 +124,9 @@ export XDG_CACHE_HOME="\$HOME/.cache"
 # set node path to shared modules
 export NODE_PATH="\$XDG_DATA_HOME/heroku/plugins/node_modules"
 
+# disable encryption 'cause lib secret requires head
+export SFDX_DISABLE_ENCRYPTION=true;
+
 # log SALESFORCE_ and HEROKU_ config vars
 if [ "\$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
     echo "[DEBUG] PATH=\$PATH"
