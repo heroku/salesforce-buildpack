@@ -53,6 +53,7 @@ VENDORED_SFDX_CLI="vendor/sfdx-cli"
 rm -rf "$BUILD_DIR/$VENDORED_SFDX_CLI"
 
 # install sfdx cli w/ all sfdx plugins
+cd "$BUILD_DIR"
 : ${SFDX_CLI_VERSION:="DEVELOP"}
 SFDX_CLI_URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-buildpack-${SFDX_CLI_VERSION}.tar.gz
 if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
@@ -69,8 +70,8 @@ export XDG_DATA_HOME="$BUILD_DIR/.local"
 export XDG_CACHE_HOME="$BUILD_DIR/.cache"
 
 if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
-    debug $VENDORED_SFDX_CLI/heroku/bin:
-    ls -Llsrt $VENDORED_SFDX_CLI/heroku/bin
+    debug $BUILD_DIR/$VENDORED_SFDX_CLI/heroku/bin:
+    ls -Llsrt $BUILD_DIR/$VENDORED_SFDX_CLI/heroku/bin
 fi
 
 # touch autoupdate file to prevent 'heroku update' (which breaks
