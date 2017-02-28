@@ -53,7 +53,7 @@ To achieve a Continuous Integration and Continuous Delivery flow, you can create
 Running tests means setting up and managing the testing environment. The Salesforce DX test runner can be configured to do all setup and cleanup tasks. A sample set of tasks could be: create a scratch org; push source to the org; create permsets; import data; run tests; delete the org.
 Alternatively, the test runner can simply run tests and leverage setup done during (e.g.) the [release phase](https://devcenter.heroku.com/articles/release-phase).
 
-In order to have the test runner perform setup and cleanup tasks, the SALESFORCE_HUB_URL config var must be defined in the pipeline config.  Test runner uses this variable, along with the Salesforce buildpack-generated `~/.appcloud/hubOrg.json` file, to create scratch orgs.  Within the scripts section of `app.json` or `app-ci.json`, define a test script that will execute the test runner command from the Salesforce DX CLI. For example:
+In order to have the test runner perform setup and cleanup tasks, the SALESFORCE_HUB_URL config var must be defined in the pipeline config.  Test runner uses this variable, along with the Salesforce buildpack-generated `~/.sfdx/hubOrg.json` file, to create scratch orgs.  Within the scripts section of `app.json` or `app-ci.json`, define a test script that will execute the test runner command from the Salesforce DX CLI. For example:
 ```
 heroku force:test -c test/test-runner-config.json -r tap
 ```

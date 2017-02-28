@@ -4,10 +4,10 @@
 # Detect that Salesforce Buildpack is applicable to Force.com project.
 ##
 
-if [ -f $1/workspace-config.json ]; then
+if [ -f $1/sfdx-workspace.json ]; then
     echo "Force.com (Salesforce DX Workspace)"
     exit 0
 else
-    echo "Did NOT find 'workspace-config.json' in Force.com project"
+    echo "Did NOT find 'sfdx-workspace.json' in Force.com project"
     exit 1
 fi

@@ -13,9 +13,9 @@
     },
     "homepage": "https://github.com/heroku/salesforce-buildpack#readme",
     "dependencies": {
-        "bluebird": "3.4.0",
+        "bluebird": "3.4.6",
         "express": "4.13.4",
-        "salesforce-alm": "preview"
+        "salesforce-alm": "latest"
     },
     "devDependencies": {
         "eslint": "^3.4.0",

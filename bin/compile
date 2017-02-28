@@ -27,67 +27,62 @@ source $BP_DIR/lib/common.sh
 source $BP_DIR/lib/node.sh
 source $BP_DIR/lib/libs.sh
 
+# set defaults for optional config vars
+: ${SALESFORCE_BUILDPACK_VERBOSE:="false"}
+: ${SALESFORCE_BUILDPACK_DEBUG:="false"}
+
 echo ""
 highlight "Welcome to Salesforce Buildpack!!"
 echo ""
 
 
 ###   E X P O R T   C O N F I G   V A R S
-log "Exporting config vars to environment..."
 export_env_dir
-
-# set defaults for optional config vars
-: ${SALESFORCE_BUILDPACK_VERBOSE:="false"}
-: ${SALESFORCE_BUILDPACK_DEBUG:="false"}
 
 mkdir -p $SALESFORCE_DIR
 export SALESFORCE_DIR=$SALESFORCE_DIR
 
 
-###   H E R O K U   C L I
-status "Installing Heroku CLI and SFDX plugins"
+###   S F D X   C L I
+status "Installing SFDX CLI and SFDX plugins"
 
 # vendor directories
-VENDORED_HEROKU_CLI="vendor/heroku-cli"
+VENDORED_SFDX_CLI="vendor/sfdx-cli"
 
 # download and extract the client tarball
-rm -rf "$BUILD_DIR/$VENDORED_HEROKU_CLI"
-mkdir -p "$BUILD_DIR/$VENDORED_HEROKU_CLI"
-cd "$BUILD_DIR/$VENDORED_HEROKU_CLI"
+rm -rf "$BUILD_DIR/$VENDORED_SFDX_CLI"
 
-: ${HEROKU_CLI_VERSION:="5.4.3-a5b1cb1"}
-HEROKU_CLI_URL="https://cli-assets.heroku.com/branches/stable/$HEROKU_CLI_VERSION/heroku-v$HEROKU_CLI_VERSION-linux-amd64.tar.xz"
+# install sfdx cli w/ all sfdx plugins
+cd "$BUILD_DIR"
+: ${SFDX_CLI_VERSION:="LATEST"}
+SFDX_CLI_URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-buildpack-${SFDX_CLI_VERSION}.tar.gz
 if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
-    debug "HEROKU_CLI_URL=$HEROKU_CLI_URL"
+    debug "SFDX_CLI_URL=$SFDX_CLI_URL"
 fi
 if [[ -z "$(which wget)" ]]; then
-  curl -s $HEROKU_CLI_URL | tar xJf -
+  curl -s $SFDX_CLI_URL | tar xzf -
 else
-  wget -qO- $HEROKU_CLI_URL | tar xJf -
+  wget -qO- $SFDX_CLI_URL | tar xzf -
 fi
 
-export PATH="$PATH:$BUILD_DIR/$VENDORED_HEROKU_CLI/heroku/bin"
+export PATH="$PATH:$BUILD_DIR/$VENDORED_SFDX_CLI/heroku/bin"
 export XDG_DATA_HOME="$BUILD_DIR/.local"
 export XDG_CACHE_HOME="$BUILD_DIR/.cache"
+
+if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
+    debug $BUILD_DIR/$VENDORED_SFDX_CLI/heroku/bin:
+    ls -Llsrt $BUILD_DIR/$VENDORED_SFDX_CLI/heroku/bin
+fi
 
 # touch autoupdate file to prevent 'heroku update' (which breaks
 # tar as 'heroku update' alters what is being tar'd)
 mkdir -p $XDG_CACHE_HOME/heroku
 touch $XDG_CACHE_HOME/heroku/autoupdate
 
-# install plugins
-: ${SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG:="preview"}
-: ${SALESFORCE_FORCE_COM_CLI_DIST_TAG:="preview"}
+# log installed plugins
+sfdx plugins
 
-if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
-    debug "SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG=$SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG"
-fi
-
-heroku plugins:install salesforce-alm@$SALESFORCE_APPCLOUD_TOOLBET_DIST_TAG
-heroku plugins:install force-cli@$SALESFORCE_FORCE_COM_CLI_DIST_TAG
-heroku plugins
-
-status "Heroku CLI and SFDX plugins installation complete"
+status "SFDX CLI and SFDX plugins installation complete"
 
 
 ###   N O D E
@@ -104,7 +99,9 @@ status "Installing node modules..."
 cp -R $BP_DIR/lib/* $SALESFORCE_DIR/
 cp $BP_DIR/package.json $XDG_DATA_HOME/heroku/plugins/package.json
 cd $XDG_DATA_HOME/heroku/plugins
-npm install --only=production | indent
+# info, verbose, silly
+: ${SALESFORCE_BUILDPACK_NPM_INSTALL_LOG_LEVEL:="verbose"}
+#npm install --loglevel $SALESFORCE_BUILDPACK_NPM_INSTALL_LOG_LEVEL --only=production | indent
 
 # double-check that node is installed
 if [ ! -f $SALESFORCE_DIR/node/bin/node ]; then
@@ -119,7 +116,7 @@ export SALESFORCE_DEPLOY_DIR="\$HOME/$SALESFORCE_DIR_NAME"
 mkdir -p $BUILD_DIR/.profile.d
 cat <<EOF >$BUILD_DIR/.profile.d/salesforce-env.sh
 # set path so release and customer scripts and use heroku cli and node exes
-export PATH="\$PATH:\$HOME/$VENDORED_HEROKU_CLI/heroku/bin:\$HOME/$SALESFORCE_DIR_NAME/node/bin"
+export PATH="\$PATH:\$HOME/$VENDORED_SFDX_CLI/heroku/bin:\$HOME/$SALESFORCE_DIR_NAME/node/bin"
 # set so heroku cli can re-use plugins
 export XDG_DATA_HOME="\$HOME/.local"
 # set so heroku cli can see heroku/autoupdate to not trigger update
@@ -127,16 +124,19 @@ export XDG_CACHE_HOME="\$HOME/.cache"
 # set node path to shared modules
 export NODE_PATH="\$XDG_DATA_HOME/heroku/plugins/node_modules"
 
+# disable encryption 'cause lib secret requires head
+export SFDX_DISABLE_ENCRYPTION=true;
+
 # log SALESFORCE_ and HEROKU_ config vars
 if [ "\$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
     echo "[DEBUG] PATH=\$PATH"
-    for e in \$(env | grep '^SALESFORCE_\|^HEROKU_\|^APPCLOUD_\|^XDG_\|^NODE_'); do
+    for e in \$(env | grep '^SALESFORCE_\|^HEROKU_\|^SFDX_\|^XDG_\|^NODE_'); do
         echo "[DEBUG] \$e"
     done
 fi
 
-# setup env to support appcloud and force.com plugin commands
-mkdir -p .local/.appcloud
+# setup env to support sfdx plugin commands
+mkdir -p .local/.sfdx
 $SALESFORCE_DIR_NAME/node/bin/node $SALESFORCE_DIR_NAME/force.js setup
 
 EOF
@@ -149,18 +149,18 @@ fi
 
 
 ###   P R O C F I L E
-# if no Procfile, write Procfile having default behavior: deploy in release phase, redirect to SALESFORCE_URL in web phase
+# if no Procfile, write Procfile having default behavior: deploy in release phase, redirect to SFDX_AUTH_URL in web phase
 if [ ! -f $BUILD_DIR/Procfile ]; then
     cat <<EOF >$BUILD_DIR/Procfile
-# Deploy source to SALESFORCE_URL org.
+# Deploy source to SFDX_AUTH_URL org.
 release: .salesforce/node/bin/node .salesforce/force.js release
 
-# Redirect all Heroku app domain requests to SALESFORCE_URL org.
+# Redirect all Heroku app domain requests to SFDX_AUTH_URL org.
 # Defaults to /one/one.app, configurable via SALESFORCE_START_URL config var.
 web: .salesforce/node/bin/node .salesforce/force.js redirect
 
 EOF
-    status "Generated Procfile that will deploy source in release phase and redirect to SALESFORCE_URL in web phase"
+    status "Generated Procfile that will deploy source in release phase and redirect to SFDX_AUTH_URL in web phase"
     if [ "$SALESFORCE_BUILDPACK_DEBUG" == "true" ]; then
         debug "$BUILD_DIR/Procfile:"
         debug "`cat $BUILD_DIR/Procfile`"
@@ -171,13 +171,13 @@ fi
 ###   F I N A L   N O T E S
 highlight "    "
 highlight "### N O T E ###"
-highlight "Heroku CLI and SFDX plugins were installed for use in release and test phase scripts."
+highlight "SFDX CLI and SFDX plugins were installed for use in release and test phase scripts."
 highlight "To use SFDX CLI commands, ensure that '.profile.d/salesforce-env.sh' is sourced to setup shell environment."
 highlight "    "
-highlight "To DEPLOY source to your app's Organization (SALESFORCE_URL), invoke 'node $SALESFORCE_DIR_NAME/force.js release' in your app's Procfile or release phase script."
+highlight "To DEPLOY source to your app's Organization (SFDX_AUTH_URL), invoke 'node $SALESFORCE_DIR_NAME/force.js release' in your app's Procfile or release phase script."
 highlight "    "
-highlight "To TEST, invoke SFDX CLI test commands (force:apex:test or force:test) in the test section of app.json.  Eg:"
-highlight "    heroku force:apex:test [params]"
+highlight "To TEST, invoke SFDX CLI test commands (force:apex:test:run or force:testrunner:run) in the test section of app.json.  Eg:"
+highlight "    sfdx force:apex:test:run [params]"
 highlight "    "
 highlight "###############"
 highlight "    "
