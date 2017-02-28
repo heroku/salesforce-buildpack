@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Install secret needed by AppCloud NPM to encrypt credentials.
+# Install secret needed by SFDX NPM to encrypt credentials.
 #
 # Reference: https://github.com/jkutner/heroku-buildpack-minecraft/blob/master/bin/compile#L21-L37
 install_libsecret() {
