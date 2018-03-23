@@ -141,17 +141,16 @@ fi
 if [ "$SFDX_CREATE_PACKAGE_VERSION" == "true" ] && [ ! "$STAGE" == "" ];
 then
 
+  log "Auth to dev hub ..."
+
+  # Authenticate to Dev Hub (for package creation)
+  auth "$devHubAuthFile" "$SFDX_DEV_HUB_AUTH_URL" d huborg
+
   pkgVersionCreateScript=$BUILD_DIR/bin/package-create.sh
   # run package version create
   if [ ! -f "$pkgVersionCreateScript" ];
   then
 
-    log "Auth to dev hub ..."
-
-    # Authenticate to Dev Hub (for package creation)
-    auth "$devHubAuthFile" "$SFDX_DEV_HUB_AUTH_URL" d huborg
-
-    log "Auth to dev hub ..."
     # get package id
     CMD="sfdx force:package2:list --json | jq '.result[] | select((.Name) == \"$SFDX_PACKAGE_NAME\")' | jq -r .Id"
     debug "CMD: $CMD"
@@ -168,7 +167,7 @@ then
   else
 
     log "Calling $pkgVersionCreateScript"
-    sh "$pkgVersionCreateScript" "$TARGET_SCRATCH_ORG_ALIAS" "$STAGE"
+    sh "$pkgVersionCreateScript" huborg "$STAGE"
 
   fi
 
