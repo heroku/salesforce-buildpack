@@ -113,9 +113,8 @@ if [ ! "$STAGE" == "" ]; then
 
     else
 
-      # Set path for Dev Hub auth file
-      devHubAuthFile=$BUILD_DIR/$vendorDir/sfdxurl
-      auth "$devHubAuthFile" "$SFDX_DEV_HUB_AUTH_URL" d huborg
+      # Auth to Dev Hub
+      auth "$vendorDir/sfdxurl" "$SFDX_DEV_HUB_AUTH_URL" d huborg
 
       log "Calling $pkgVersionInstallScript"
       sh "$pkgVersionInstallScript" "$TARGET_SCRATCH_ORG_ALIAS" "$STAGE"
