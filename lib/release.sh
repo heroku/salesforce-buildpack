@@ -113,6 +113,9 @@ if [ ! "$STAGE" == "" ]; then
 
     else
 
+      # Auth to Dev Hub
+      auth "$vendorDir/sfdxurl" "$SFDX_DEV_HUB_AUTH_URL" d huborg
+
       log "Calling $pkgVersionInstallScript"
       sh "$pkgVersionInstallScript" "$TARGET_SCRATCH_ORG_ALIAS" "$STAGE"
 
