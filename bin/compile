@@ -112,7 +112,7 @@ devHubAuthFile=$BUILD_DIR/$vendorDir/sfdxurl
 
 # Review App or CI
 debug "Stage: $STAGE"
-if [ "$STAGE" == "" ]; then
+if [ "$STAGE" == "DEV" ]; then
 
   log "Running as a REVIEW APP ..."
 
@@ -139,7 +139,7 @@ if [ "$STAGE" == "" ]; then
 fi
 
 # Create a package is specied and it's not a review app
-if [ "$SFDX_CREATE_PACKAGE_VERSION" == "true" ] && [ ! "$STAGE" == "" ];
+if [ "$SFDX_CREATE_PACKAGE_VERSION" == "true" ] && [ ! "$STAGE" == "DEV" ];
 then
 
   log "Auth to dev hub ..."
