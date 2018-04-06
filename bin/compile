@@ -252,6 +252,7 @@ if [ ! -f $BUILD_DIR/Procfile ]; then
 release: ./"$vendorDir"/release.sh \"$TARGET_SCRATCH_ORG_ALIAS\" \"$SFDX_PACKAGE_VERSION_ID\"" > $BUILD_DIR/Procfile
 
   debug "Generated Procfile that will deploy source in release phase and redirect to open-path in web phase"
+  cat $BUILD_DIR/Procfile
 fi
 
 # copy scripts needed for release phase
