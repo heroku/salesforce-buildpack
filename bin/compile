@@ -139,7 +139,7 @@ if [ "$STAGE" == "DEV" ]; then
 fi
 
 # Create a package is specied and it's not a review app
-if [ "$SFDX_CREATE_PACKAGE_VERSION" == "true" ] && [ ! "$STAGE" == "DEV" ];
+if [ "$SFDX_CREATE_PACKAGE_VERSION" == "true" ] && [ ! "$STAGE" == "" ];
 then
 
   log "Auth to dev hub ..."
