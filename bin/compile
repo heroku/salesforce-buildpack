@@ -111,6 +111,7 @@ debug "data-plans: $data_plans"
 devHubAuthFile=$BUILD_DIR/$vendorDir/sfdxurl
 
 # Review App or CI
+debug "Stage: $STAGE"
 if [ "$STAGE" == "" ]; then
 
   log "Running as a REVIEW APP ..."
