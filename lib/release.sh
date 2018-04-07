@@ -61,8 +61,8 @@ debug "show_scratch_org_url: $show_scratch_org_url"
 debug "open-path: $open_path"
 debug "data-plans: $data_plans"
 
-# If review app or CI
-if [ "$STAGE" == "" ]; then
+# If review app or CI -- Added "STAGE"; "REVIEW" in app.json
+if [ "$STAGE" == "REVIEW" ]; then
 
   log "Running as a REVIEW APP ..."
   if [ ! "$CI" == "" ]; then
@@ -93,7 +93,7 @@ if [ "$STAGE" == "" ]; then
 fi
 
 # If Development, Staging, or Prod
-if [ ! "$STAGE" == "" ]; then
+if [ ! "$STAGE" == "REVIEW" ]; then
 
   log "Detected $STAGE. Kicking off deployment ..."
 
