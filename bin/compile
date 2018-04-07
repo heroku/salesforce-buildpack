@@ -110,9 +110,8 @@ debug "data-plans: $data_plans"
 # Set path for Dev Hub auth file
 devHubAuthFile=$BUILD_DIR/$vendorDir/sfdxurl
 
-# Review App or CI
-debug "Stage: $STAGE"
-if [ "$STAGE" == "DEV" ]; then
+# Review App or CI / ADDED "STAGE" : "REVIEW" in app.json
+if [ "$STAGE" == "REVIEW" ]; then
 
   log "Running as a REVIEW APP ..."
 
@@ -139,7 +138,7 @@ if [ "$STAGE" == "DEV" ]; then
 fi
 
 # Create a package is specied and it's not a review app
-if [ "$SFDX_CREATE_PACKAGE_VERSION" == "true" ] && [ ! "$STAGE" == "" ];
+if [ "$SFDX_CREATE_PACKAGE_VERSION" == "true" ] && [ ! "$STAGE" == "REVIEW" ];
 then
 
   log "Auth to dev hub ..."
