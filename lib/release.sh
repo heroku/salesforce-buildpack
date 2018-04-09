@@ -111,7 +111,7 @@ if [ ! "$STAGE" == "REVIEW" ]; then
         log "Auth to dev hub ..."
 
         # Authenticate to Dev Hub (for package release)
-        auth "$devHubAuthFile" "$SFDX_DEV_HUB_AUTH_URL" d huborg
+        auth "$vendorDir/sfdxurl" "$SFDX_DEV_HUB_AUTH_URL" d huborg
 
         log "Releasing package version $SFDX_PACKAGE_NAME ..."
 
