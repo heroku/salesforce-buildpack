@@ -106,10 +106,15 @@ if [ ! "$STAGE" == "REVIEW" ]; then
     # run package install
     if [ ! -f "$pkgVersionInstallScript" ];
     then
-    
-      log "Installing package version $SFDX_PACKAGE_NAME ..."
-
-      invokeCmd "sfdx force:package:install -i \"$SFDX_PACKAGE_VERSION_ID\" -u \"$TARGET_SCRATCH_ORG_ALIAS\" --wait 1000 --publishwait 1000 --noprompt"
+      if [ "$STAGE" == "PROD" ]; then
+        
+        log "Releasing package version $SFDX_PACKAGE_NAME ..."
+        invokeCmd "sfdx force:package2:version:update -i \"$SFDX_PACKAGE_VERSION_ID\"  --setasreleased --noprompt"
+        
+      fi
+      
+        log "Installing package version $SFDX_PACKAGE_NAME ..."
+        invokeCmd "sfdx force:package:install -i \"$SFDX_PACKAGE_VERSION_ID\" -u \"$TARGET_SCRATCH_ORG_ALIAS\" --wait 1000 --publishwait 1000 --noprompt"
 
     else
 
