@@ -108,7 +108,13 @@ if [ ! "$STAGE" == "REVIEW" ]; then
     then
       if [ "$STAGE" == "PROD" ]; then
         
+        log "Auth to dev hub ..."
+
+        # Authenticate to Dev Hub (for package release)
+        auth "$devHubAuthFile" "$SFDX_DEV_HUB_AUTH_URL" d huborg
+
         log "Releasing package version $SFDX_PACKAGE_NAME ..."
+
         invokeCmd "sfdx force:package2:version:update -i \"$SFDX_PACKAGE_VERSION_ID\"  --setasreleased --noprompt"
         
       fi
