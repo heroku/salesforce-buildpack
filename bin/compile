@@ -165,7 +165,7 @@ then
     debug "SFDX_PACKAGE2_VERSION_ID: $SFDX_PACKAGE2_VERSION_ID"
     
     # get package version id
-    CMD="sfdx force:package2:version:create:get -i $SFDX_PACKAGE2_VERSION_ID --json | jq -r .result.SubscriberPackageVersionId"
+    CMD="sfdx force:package2:version:create:list --json | jq '.result[] | select((.Id) == \"$SFDX_PACKAGE2_VERSION_ID\")' | jq -r .SubscriberPackageVersionId"
     SFDX_PACKAGE_VERSION_ID=$(eval $CMD)
     debug "SFDX_PACKAGE_VERSION_ID: $SFDX_PACKAGE_VERSION_ID"
 
