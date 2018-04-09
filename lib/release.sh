@@ -9,6 +9,7 @@ unset GIT_DIR       # Avoid GIT_DIR leak from previous build steps
 
 TARGET_SCRATCH_ORG_ALIAS=${1:-}
 SFDX_PACKAGE_VERSION_ID=${2:-}
+SFDX_PACKAGE2_VERSION_ID=${3:-}
 
 vendorDir="vendor/sfdx"
 
@@ -114,8 +115,11 @@ if [ ! "$STAGE" == "REVIEW" ]; then
         auth "$vendorDir/sfdxurl" "$SFDX_DEV_HUB_AUTH_URL" d huborg
 
         log "Releasing package version $SFDX_PACKAGE_NAME ..."
-
-        invokeCmd "sfdx force:package2:version:update -i \"$SFDX_PACKAGE_VERSION_ID\"  --setasreleased --noprompt"
+        # create package version
+        CMD="sfdx force:package2:version:create:get -i $SFDX_PACKAGE2_VERSION_ID --json | jq -r .result.Package2VersionId"
+        SFDX_VERSION_ID=$(eval $CMD)
+        debug "SFDX_VERSION_ID: $SFDX_VERSION_ID"
+        invokeCmd "sfdx force:package2:version:update -i \"$SFDX_VERSION_ID\"  --setasreleased --noprompt"
         
       fi
       
