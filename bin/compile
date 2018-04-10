@@ -110,8 +110,8 @@ debug "data-plans: $data_plans"
 # Set path for Dev Hub auth file
 devHubAuthFile=$BUILD_DIR/$vendorDir/sfdxurl
 
-# Review App or CI
-if [ "$STAGE" == "" ]; then
+# Review App or CI / ADDED "STAGE" : "REVIEW" in app.json
+if [ "$STAGE" == "REVIEW" ]; then
 
   log "Running as a REVIEW APP ..."
 
@@ -138,7 +138,7 @@ if [ "$STAGE" == "" ]; then
 fi
 
 # Create a package is specied and it's not a review app
-if [ "$SFDX_CREATE_PACKAGE_VERSION" == "true" ] && [ ! "$STAGE" == "" ];
+if [ "$SFDX_CREATE_PACKAGE_VERSION" == "true" ] && [ ! "$STAGE" == "REVIEW" ];
 then
 
   log "Auth to dev hub ..."
@@ -160,7 +160,12 @@ then
     log "Creating new package version (this may take awhile) ..."
 
     # create package version
-    CMD="sfdx force:package2:version:create -i $SFDX_PACKAGE_ID --wait 100 --json | jq -r .result.SubscriberPackageVersionId"
+    CMD="sfdx force:package2:version:create -i $SFDX_PACKAGE_ID --wait 100 --json | jq -r .result.Id"
+    SFDX_PACKAGE2_VERSION_ID=$(eval $CMD)
+    debug "SFDX_PACKAGE2_VERSION_ID: $SFDX_PACKAGE2_VERSION_ID"
+    
+    # get package version id
+    CMD="sfdx force:package2:version:create:list --json | jq '.result[] | select((.Id) == \"$SFDX_PACKAGE2_VERSION_ID\")' | jq -r .SubscriberPackageVersionId"
     SFDX_PACKAGE_VERSION_ID=$(eval $CMD)
     debug "SFDX_PACKAGE_VERSION_ID: $SFDX_PACKAGE_VERSION_ID"
 
@@ -249,7 +254,7 @@ fi
 if [ ! -f $BUILD_DIR/Procfile ]; then
   log "Creating Procfile ..."
   echo "# Deploy source to production org.
-release: ./"$vendorDir"/release.sh \"$TARGET_SCRATCH_ORG_ALIAS\" \"$SFDX_PACKAGE_VERSION_ID\"" > $BUILD_DIR/Procfile
+release: ./"$vendorDir"/release.sh \"$TARGET_SCRATCH_ORG_ALIAS\" \"$SFDX_PACKAGE_VERSION_ID\" \"$SFDX_PACKAGE2_VERSION_ID\"" > $BUILD_DIR/Procfile
 
   debug "Generated Procfile that will deploy source in release phase and redirect to open-path in web phase"
 fi

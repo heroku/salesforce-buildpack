@@ -9,6 +9,7 @@ unset GIT_DIR       # Avoid GIT_DIR leak from previous build steps
 
 TARGET_SCRATCH_ORG_ALIAS=${1:-}
 SFDX_PACKAGE_VERSION_ID=${2:-}
+SFDX_PACKAGE2_VERSION_ID=${3:-}
 
 vendorDir="vendor/sfdx"
 
@@ -41,6 +42,7 @@ debug "SFDX_INSTALL_PACKAGE_VERSION: $SFDX_INSTALL_PACKAGE_VERSION"
 debug "SFDX_CREATE_PACKAGE_VERSION: $SFDX_CREATE_PACKAGE_VERSION"
 debug "SFDX_PACKAGE_NAME: $SFDX_PACKAGE_NAME"
 debug "SFDX_PACKAGE_VERSION_ID: $SFDX_PACKAGE_VERSION_ID"
+debug "SFDX_PACKAGE_ID: $SFDX_PACKAGE2_VERSION_ID"
 
 whoami=$(whoami)
 debug "WHOAMI: $whoami"
@@ -61,8 +63,8 @@ debug "show_scratch_org_url: $show_scratch_org_url"
 debug "open-path: $open_path"
 debug "data-plans: $data_plans"
 
-# If review app or CI
-if [ "$STAGE" == "" ]; then
+# If review app or CI -- Added "STAGE"; "REVIEW" in app.json
+if [ "$STAGE" == "REVIEW" ]; then
 
   log "Running as a REVIEW APP ..."
   if [ ! "$CI" == "" ]; then
@@ -93,7 +95,7 @@ if [ "$STAGE" == "" ]; then
 fi
 
 # If Development, Staging, or Prod
-if [ ! "$STAGE" == "" ]; then
+if [ ! "$STAGE" == "REVIEW" ]; then
 
   log "Detected $STAGE. Kicking off deployment ..."
 
@@ -106,10 +108,26 @@ if [ ! "$STAGE" == "" ]; then
     # run package install
     if [ ! -f "$pkgVersionInstallScript" ];
     then
-    
-      log "Installing package version $SFDX_PACKAGE_NAME ..."
+      if [ "$STAGE" == "PROD" ]; then
+        
+        log "Auth to dev hub ..."
 
-      invokeCmd "sfdx force:package:install -i \"$SFDX_PACKAGE_VERSION_ID\" -u \"$TARGET_SCRATCH_ORG_ALIAS\" --wait 1000 --publishwait 1000"
+        # Authenticate to Dev Hub (for package release)
+        auth "$vendorDir/sfdxurl" "$SFDX_DEV_HUB_AUTH_URL" d huborg
+
+        log "Releasing package version $SFDX_PACKAGE_NAME ..."
+        # release package
+        CMD="sfdx force:package2:version:create:get -i \"$SFDX_PACKAGE2_VERSION_ID\" --json | jq '.result[] | select((.Id) == \"$SFDX_PACKAGE2_VERSION_ID\")' | jq -r .Package2VersionId"
+        debug "Create package release: $CMD"
+        SFDX_VERSION_ID=$(eval $CMD)
+        debug "SFDX_VERSION_ID: $SFDX_VERSION_ID"
+        debug "Version Update CMD: sfdx force:package2:version:update -i \"$SFDX_VERSION_ID\"  --setasreleased --noprompt -v huborg"
+        invokeCmd "sfdx force:package2:version:update -i \"$SFDX_VERSION_ID\"  --setasreleased --noprompt -v huborg"
+        
+      fi
+      
+        log "Installing package version $SFDX_PACKAGE_NAME ..."
+        invokeCmd "sfdx force:package:install -i \"$SFDX_PACKAGE_VERSION_ID\" -u \"$TARGET_SCRATCH_ORG_ALIAS\" --wait 1000 --publishwait 1000 --noprompt"
 
     else
 
