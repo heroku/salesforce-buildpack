@@ -42,6 +42,7 @@ debug "SFDX_INSTALL_PACKAGE_VERSION: $SFDX_INSTALL_PACKAGE_VERSION"
 debug "SFDX_CREATE_PACKAGE_VERSION: $SFDX_CREATE_PACKAGE_VERSION"
 debug "SFDX_PACKAGE_NAME: $SFDX_PACKAGE_NAME"
 debug "SFDX_PACKAGE_VERSION_ID: $SFDX_PACKAGE_VERSION_ID"
+debug "SFDX_PACKAGE_ID: $SFDX_PACKAGE2_VERSION_ID"
 
 whoami=$(whoami)
 debug "WHOAMI: $whoami"
@@ -115,8 +116,9 @@ if [ ! "$STAGE" == "REVIEW" ]; then
         auth "$vendorDir/sfdxurl" "$SFDX_DEV_HUB_AUTH_URL" d huborg
 
         log "Releasing package version $SFDX_PACKAGE_NAME ..."
-        # create package version
+        # release package
         CMD="sfdx force:package2:version:create:get -i $SFDX_PACKAGE2_VERSION_ID --json | jq -r .result.Package2VersionId"
+        debug "Create package release: $CMD"
         SFDX_VERSION_ID=$(eval $CMD)
         debug "SFDX_VERSION_ID: $SFDX_VERSION_ID"
         invokeCmd "sfdx force:package2:version:update -i \"$SFDX_VERSION_ID\"  --setasreleased --noprompt"
