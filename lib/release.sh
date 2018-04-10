@@ -117,10 +117,11 @@ if [ ! "$STAGE" == "REVIEW" ]; then
 
         log "Releasing package version $SFDX_PACKAGE_NAME ..."
         # release package
-        CMD="sfdx force:package2:version:create:get -i $SFDX_PACKAGE2_VERSION_ID --json | jq '.result[] | select((.Id) == \"$SFDX_PACKAGE2_VERSION_ID\")' | jq -r .Package2VersionId"
+        CMD="sfdx force:package2:version:create:get -i \"$SFDX_PACKAGE2_VERSION_ID\" --json | jq '.result[] | select((.Id) == \"$SFDX_PACKAGE2_VERSION_ID\")' | jq -r .Package2VersionId"
         debug "Create package release: $CMD"
         SFDX_VERSION_ID=$(eval $CMD)
         debug "SFDX_VERSION_ID: $SFDX_VERSION_ID"
+        debug "Version Update CMD: sfdx force:package2:version:update -i \"$SFDX_VERSION_ID\"  --setasreleased --noprompt -v huborg"
         invokeCmd "sfdx force:package2:version:update -i \"$SFDX_VERSION_ID\"  --setasreleased --noprompt -v huborg"
         
       fi
