@@ -121,7 +121,7 @@ if [ ! "$STAGE" == "REVIEW" ]; then
         debug "Create package release: $CMD"
         SFDX_VERSION_ID=$(eval $CMD)
         debug "SFDX_VERSION_ID: $SFDX_VERSION_ID"
-        invokeCmd "sfdx force:package2:version:update -i \"$SFDX_VERSION_ID\"  --setasreleased --noprompt"
+        invokeCmd "sfdx force:package2:version:update -i \"$SFDX_VERSION_ID\"  --setasreleased --noprompt -v huborg"
         
       fi
       
