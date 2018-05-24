@@ -24,10 +24,3 @@ tests() {
   fi
 
 }
-
-# <package_name>
-createPackage2Version() {
-
-  packageName="$1"
-  
-}
