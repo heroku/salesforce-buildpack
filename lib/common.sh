@@ -42,7 +42,7 @@ parse_yaml() {
 
 header() {
   echo ""
-  echo -e "-----> \033[34m$*\033[0m"
+  echo -e "-----> \e[34m $* \e[0m"
   echo ""
 }
 
