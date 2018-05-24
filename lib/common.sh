@@ -41,9 +41,9 @@ parse_yaml() {
 }
 
 header() {
-  echo "" || true
-  echo -e "-----> \e[34m$*\033[0m" || true
-  echo "" || true
+  echo ""
+  echo -e "-----> \e[34m $* \e[0m"
+  echo ""
 }
 
 status() {
