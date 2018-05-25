@@ -17,10 +17,10 @@ This buildpack requires the following to be present in the Salesforce app reposi
       ```
       "buildpacks": [
       {
-        "url": "https://github.com/heroku/salesforce-cli-buildpack"
+        "url": "https://github.com/heroku/salesforce-cli-buildpack#v3"
       },
       {
-        "url": "https://github.com/heroku/salesforce-buildpack"
+        "url": "https://github.com/heroku/salesforce-buildpack#v1"
       }
       ```
 
@@ -128,15 +128,3 @@ These values are the same as above but with the following considerations.
 - `STAGE=PROD`: Instructs the buildpack that this app stage is PROD.
 
 - `SFDX_AUTH_URL`: This should map to your production environment.
-
-## Quick Setup 
-
-While you can setup Herokup Pipelines and CI manually, it helps to initially create using a command we provide. To get started, install the following plugin:
-
-`sfdx plugins:install @salesforce/plugins`
-
-Once installed, you can run the following command to create your Heroku Pipeline and setup CI:
-
-`sfdx force:pipelines:create `
-
-Once configured, you can immediately start using Heroku Pipelines and CI.
