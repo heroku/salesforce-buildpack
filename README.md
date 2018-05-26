@@ -3,7 +3,7 @@
 This is the official [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Salesforce apps.
 This buildpack enables various Salesforce specific development operations such as creating scratch orgs and pushing source, creating and installing Unlocked Packages, running Apex unit tests, and deploying metadata.
 
-Below you'll find information on the **requirements** in your Salesforce project repository, the **config vars** required to operate the buildpack, and how to **quickly setup Heroku Pipelines & CI** using the Salesforce CLI's `force:pipelines:create` command.
+Below you'll find information on the **requirements** in your Salesforce project repository, the **config vars** required to operate the buildpack.
 
 To see an example Salesforce project that's configured to use Heroku Pipelines and CI, see [https://github.com/wadewegner/salesforce-dx-pipeline-sample](https://github.com/wadewegner/salesforce-dx-pipeline-sample). It's also worth noting that this buildpack is dependent on [https://github.com/heroku/salesforce-cli-buildpack](https://github.com/heroku/salesforce-cli-buildpack), which installs the Salesforce CLI into the underlying dyno.
 
