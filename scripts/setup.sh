@@ -13,16 +13,16 @@ set -o nounset    # fail on unset variables
 # Name of your team (optional)
 HEROKU_TEAM_NAME=""
 
-# Descriptive name for the Heroku app (e.g. GIFter)
+# Descriptive name for the Heroku app (e.g. gifter)
 HEROKU_APP_NAME="YOUR_APP_NAME"
 
 # Name of the Heroku apps you'll use
-HEROKU_DEV_APP_NAME="dev$HEROKU_APP_NAME"
-HEROKU_STAGING_APP_NAME="staging$HEROKU_APP_NAME"
-HEROKU_PROD_APP_NAME="prod$HEROKU_APP_NAME"
+HEROKU_DEV_APP_NAME="$HEROKU_APP_NAME-dev"
+HEROKU_STAGING_APP_NAME="$HEROKU_APP_NAME-staging"
+HEROKU_PROD_APP_NAME="$HEROKU_APP_NAME-prod"
 
 # Pipeline
-HEROKU_PIPELINE_NAME="pipeline$HEROKU_APP_NAME"
+HEROKU_PIPELINE_NAME="$HEROKU_APP_NAME-pipeline"
 
 # Usernames or aliases of the orgs you're using
 DEV_HUB_USERNAME="HubOrg"
