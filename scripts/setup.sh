@@ -33,8 +33,8 @@ PROD_USERNAME="ProdOrg"
 # Repository with your code (e.g. wadewegner/GIFter)
 GITHUB_REPO="YOUR_GITHUB_REPO"
 
-# Your package name
-PACKAGE_NAME="GIFter"
+# Your package name (e.g. GIFter)
+PACKAGE_NAME="YOUR_PACKAGE_NAME"
 
 ### Setup script
 
