@@ -1,11 +1,11 @@
 # Heroku Buildpack for Salesforce
 
 This is the official [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Salesforce apps.
-This buildpack enables various Salesforce specific development operations such as creating scratch orgs and pushing source, creating and installing Unlocked Packages, running Apex unit tests, and deploying metadata.
+This buildpack enables various Salesforce specific development operations such as creating scratch orgs and pushing source, creating and installing Unlocked Packages, running Apex unit tests, and deploying metadata. It uses [https://github.com/heroku/salesforce-cli-buildpack](https://github.com/heroku/salesforce-cli-buildpack) to download and setup the Salesforce CLI and jq.
 
-Below you'll find information on the **requirements** in your Salesforce project repository, the **config vars** required to operate the buildpack.
+Below you'll find information on the **requirements** in your Salesforce project repository and the **config vars** required to operate the buildpack. To painlessly setup your Heroku Pipeline, use this [setup script](https://github.com/heroku/salesforce-buildpack/blob/master/scripts/setup.sh).
 
-To see an example Salesforce project that's configured to use Heroku Pipelines and CI, see [https://github.com/wadewegner/salesforce-dx-pipeline-sample](https://github.com/wadewegner/salesforce-dx-pipeline-sample). It's also worth noting that this buildpack is dependent on [https://github.com/heroku/salesforce-cli-buildpack](https://github.com/heroku/salesforce-cli-buildpack), which installs the Salesforce CLI into the underlying dyno.
+To see an example Salesforce project that's configured to use Heroku Pipelines and CI, see [salesforce-dx-pipeline-sample](https://github.com/wadewegner/salesforce-dx-pipeline-sample).
 
 ## Requirements
 
@@ -20,7 +20,7 @@ This buildpack requires the following to be present in the Salesforce app reposi
         "url": "https://github.com/heroku/salesforce-cli-buildpack#v3"
       },
       {
-        "url": "https://github.com/heroku/salesforce-buildpack#v1"
+        "url": "https://github.com/heroku/salesforce-buildpack#v2"
       }
       ```
 
@@ -107,7 +107,7 @@ Note: Typically the development stage is the parent to review apps, so these con
 
 - `SFDX_BUILDPACK_DEBUG=true`: Instructs the buildpack to display debug information.
 
-- `SFDX_DEV_HUB_AUTH_URL`: Provides credentials to the buildpack for connecting to the Dev Hub (used for creating a scratch org). You can get this value by running `sfdx force:org:display --verbose --json` against your Dev Hub and grabbing the `sfdxAuthUrl`.
+- `SFDX_DEV_HUB_AUTH_URL`: Provides credentials to the buildpack for connecting to the Dev Hub. You can get this value by running `sfdx force:org:display --verbose --json` against your Dev Hub and grabbing the `sfdxAuthUrl`.
 
 - `SFDX_AUTH_URL`: Provides credentials to the buildpack for connecting to the org used by Development (typically a dev integration environment). You can get this value by running `sfdx force:org:display --verbose --json` against your org and grabbing the `sfdxAuthUrl`.
 
@@ -119,6 +119,8 @@ These values are the same as above but with the following considerations.
 
 - `SFDX_CREATE_PACKAGE_VERSION=false`: Typically you don't want to create a new package version at each stage. So this value should be false.
 
+- `SFDX_DEV_HUB_AUTH_URL`: Provides credentials to the buildpack for connecting to the Dev Hub. You can get this value by running `sfdx force:org:display --verbose --json` against your Dev Hub and grabbing the `sfdxAuthUrl`.
+
 - `SFDX_AUTH_URL`: This should map to your staging environment, typically a full sandbox.
 
 ### Production
@@ -126,5 +128,7 @@ These values are the same as above but with the following considerations.
 These values are the same as above but with the following considerations.
 
 - `STAGE=PROD`: Instructs the buildpack that this app stage is PROD.
+
+- `SFDX_DEV_HUB_AUTH_URL`: Provides credentials to the buildpack for connecting to the Dev Hub. You can get this value by running `sfdx force:org:display --verbose --json` against your Dev Hub and grabbing the `sfdxAuthUrl`.
 
 - `SFDX_AUTH_URL`: This should map to your production environment.
