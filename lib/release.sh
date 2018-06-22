@@ -60,7 +60,7 @@ debug "delete-scratch-org: $delete_scratch_org"
 debug "show_scratch_org_url: $show_scratch_org_url"
 debug "open-path: $open_path"
 debug "data-plans: $data_plans"
-debug "source-force-push": $source_force_push"
+debug "source-force-push: $source_force_push"
 
 # If review app or CI
 if [ "$STAGE" == "" ]; then
