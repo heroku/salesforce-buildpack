@@ -106,6 +106,7 @@ debug "delete-scratch-org: $delete_scratch_org"
 debug "show-scratch-org-url: $show_scratch_org_url"
 debug "open-path: $open_path"
 debug "data-plans: $data_plans"
+debug "source-force-push": $source_force_push"
 
 # Set path for Dev Hub auth file
 devHubAuthFile=$BUILD_DIR/$vendorDir/sfdxurl
