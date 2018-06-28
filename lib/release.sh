@@ -112,22 +112,16 @@ if [ ! "$STAGE" == "" ]; then
     
       # if target stage is production, release the package version
       if [ "$STAGE" == "PROD" ]; then
-      
-        # get package version id (05i)
-        CMD="sfdx force:package2:version:list --json | jq '.result[] | select((.SubscriberPackageVersionId) == \"$SFDX_PACKAGE_VERSION_ID\")' | jq -r .Id"
-        debug "CMD: $CMD"
-        SFDX_PACKAGE_ID=$(eval $CMD)
-        debug "SFDX_PACKAGE_ID: $SFDX_PACKAGE_ID"
-      
+            
         log "Set package version as released ..."
 
-        invokeCmd "sfdx force:package2:version:update -i \"$SFDX_PACKAGE_ID\" --noprompt --setasreleased"
+        invokeCmd "sfdx force:package:version:promote --package \"$SFDX_PACKAGE_VERSION_ID\" --noprompt"
 
       fi    
     
       log "Installing package version $SFDX_PACKAGE_NAME ..."
 
-      invokeCmd "sfdx force:package:install --noprompt -i \"$SFDX_PACKAGE_VERSION_ID\" -u \"$TARGET_SCRATCH_ORG_ALIAS\" --wait 1000 --publishwait 1000"
+      invokeCmd "sfdx force:package:install --noprompt --package \"$SFDX_PACKAGE_VERSION_ID\" -u \"$TARGET_SCRATCH_ORG_ALIAS\" --wait 1000 --publishwait 1000"
 
     else
 
