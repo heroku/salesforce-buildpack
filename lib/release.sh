@@ -82,7 +82,7 @@ if [ "$STAGE" == "" ]; then
   invokeCmd "sfdx force:source:push -u $TARGET_SCRATCH_ORG_ALIAS"
 
   # Show scratch org URL
-  if [ "$show_scratch_org_url" == "true" ]; then    
+  if [ "$show_scratch_org_url" == "true" ]; then
     if [ ! "$open_path" == "" ]; then
       invokeCmd "sfdx force:org:open -r -p $open_path"
     else
@@ -99,7 +99,7 @@ if [ ! "$STAGE" == "" ]; then
 
   auth "$vendorDir/sfdxurl" "$SFDX_AUTH_URL" s "$TARGET_SCRATCH_ORG_ALIAS"
 
-  if [ "$SFDX_INSTALL_PACKAGE_VERSION" == "true" ] 
+  if [ "$SFDX_INSTALL_PACKAGE_VERSION" == "true" ]
   then
 
     # Auth to Dev Hub
@@ -109,16 +109,16 @@ if [ ! "$STAGE" == "" ]; then
     # run package install
     if [ ! -f "$pkgVersionInstallScript" ];
     then
-    
+
       # if target stage is production, release the package version
       if [ "$STAGE" == "PROD" ]; then
-            
+
         log "Set package version as released ..."
 
         invokeCmd "sfdx force:package:version:promote --package \"$SFDX_PACKAGE_VERSION_ID\" --noprompt"
 
-      fi    
-    
+      fi
+
       log "Installing package version $SFDX_PACKAGE_NAME ..."
 
       invokeCmd "sfdx force:package:install --noprompt --package \"$SFDX_PACKAGE_VERSION_ID\" -u \"$TARGET_SCRATCH_ORG_ALIAS\" --wait 1000 --publishwait 1000"
@@ -155,6 +155,20 @@ if [ ! "$STAGE" == "" ]; then
       sh "$mdapiDeployScript" "$TARGET_SCRATCH_ORG_ALIAS" "$STAGE"
 
     fi
+
+  fi
+
+  if [ "$run_apex_tests" == "true" ];
+  then
+
+    log "Running apex tests (this may take awhile) ..."
+
+    CMD="sfdx force:apex:test:run --resultformat human --codecoverage -u $TARGET_SCRATCH_ORG_ALIAS --wait 1000 --json | jq -r .result.summary.testRunId"
+    debug "CMD: $CMD"
+    SFDX_TEST_RUN_ID=$(eval $CMD)
+    debug "SFDX_TEST_RUN_ID: $SFDX_TEST_RUN_ID"
+
+    invokeCmd "sfdx force:apex:test:report --testrunid $SFDX_TEST_RUN_ID --resultformat human --codecoverage -u $TARGET_SCRATCH_ORG_ALIAS --wait 1000 --verbose"
 
   fi
 
