@@ -20,7 +20,7 @@ This buildpack requires the following to be present in the Salesforce app reposi
         "url": "https://github.com/heroku/salesforce-cli-buildpack#v3"
       },
       {
-        "url": "https://github.com/heroku/salesforce-buildpack#v2"
+        "url": "https://github.com/heroku/salesforce-buildpack#v3"
       }
       ```
 
