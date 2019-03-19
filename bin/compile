@@ -253,7 +253,7 @@ if [ ! -f $BUILD_DIR/Procfile ]; then
   debug "Generated Procfile that will deploy source in release phase and redirect to open-path in web phase"
 else
   log "Appending release phase to existing Procfile ..."
-  echo "# Deploy source to production org.
+  echo "\n# Deploy source to production org.
   release: ./"$vendorDir"/release.sh \"$TARGET_SCRATCH_ORG_ALIAS\" \"$SFDX_PACKAGE_VERSION_ID\"" >> $BUILD_DIR/Procfile
   debug "FRYAN existing Procfile should now also contain a release phase with necessary actions to perform."
 fi
