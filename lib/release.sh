@@ -60,6 +60,7 @@ debug "delete-scratch-org: $delete_scratch_org"
 debug "show_scratch_org_url: $show_scratch_org_url"
 debug "open-path: $open_path"
 debug "data-plans: $data_plans"
+debug "import-data: $import_data"
 
 # If review app or CI
 if [ "$STAGE" == "" ]; then
@@ -79,7 +80,7 @@ if [ "$STAGE" == "" ]; then
   auth "$scratchSfdxAuthUrlFile" "" s "$TARGET_SCRATCH_ORG_ALIAS"
 
   # Push source
-  invokeCmd "sfdx force:source:push -u $TARGET_SCRATCH_ORG_ALIAS"
+  invokeCmd "sfdx force:source:push --forceoverwrite -u $TARGET_SCRATCH_ORG_ALIAS"
 
   # Show scratch org URL
   if [ "$show_scratch_org_url" == "true" ]; then
@@ -88,6 +89,14 @@ if [ "$STAGE" == "" ]; then
     else
       invokeCmd "sfdx force:org:open -r"
     fi
+  fi
+
+  if [ "$assign_permset" == "true" ]; then
+    invokeCmd "sfdx force:user:permset:assign -n $permset_name -u $TARGET_SCRATCH_ORG_ALIAS"
+  fi
+
+  if [ "$import_data" == "true" ]; then
+    invokeCmd "sfdx force:data:tree:import -f $data_plans"
   fi
 
 fi
