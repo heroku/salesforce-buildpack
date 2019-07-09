@@ -60,6 +60,7 @@ debug "delete-scratch-org: $delete_scratch_org"
 debug "show_scratch_org_url: $show_scratch_org_url"
 debug "open-path: $open_path"
 debug "data-plans: $data_plans"
+debug "source-force-push: $source_force_push"
 
 # If review app or CI
 if [ "$STAGE" == "" ]; then
@@ -79,7 +80,11 @@ if [ "$STAGE" == "" ]; then
   auth "$scratchSfdxAuthUrlFile" "" s "$TARGET_SCRATCH_ORG_ALIAS"
 
   # Push source
-  invokeCmd "sfdx force:source:push -u $TARGET_SCRATCH_ORG_ALIAS"
+  if [ "$source_force_push" == "true" ]; then
+    invokeCmd "sfdx force:source:push -f -u $TARGET_SCRATCH_ORG_ALIAS"
+  else
+    invokeCmd "sfdx force:source:push -u $TARGET_SCRATCH_ORG_ALIAS"
+  fi
 
   # Show scratch org URL
   if [ "$show_scratch_org_url" == "true" ]; then

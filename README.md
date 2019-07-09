@@ -74,6 +74,7 @@ This buildpack requires the following to be present in the Salesforce app reposi
     open-path: 
     import-data: false
     data-plans:
+    source-force-push: false
     ```
 
 3. **sfdx-project.json**: If you are using Unlocked Packages, which is the default behavior, you'll need to ensure the required packaging data is in your `sfdx-project.json` file.
