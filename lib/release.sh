@@ -57,7 +57,7 @@ debug "permset-name: $permset_name"
 debug "run-apex-tests: $run_apex_tests"
 debug "delete-test-org: $delete_test_org"
 debug "delete-scratch-org: $delete_scratch_org"
-debug "show_scratch_org_url: $show_scratch_org_url"
+debug "show-scratch-org-url: $show_scratch_org_url"
 debug "open-path: $open_path"
 debug "data-plans: $data_plans"
 
